@@ -5,9 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bruno"
 version = "0.1.0"
-description = "Een Python-project."
+description = "A browser-based API for managing concepts and thinkers."
 readme = "README.md"
 requires-python = ">=3.9"
+dependencies = [
+    "Flask>=3.1,<4",
+]
+
+[project.scripts]
+bruno = "bruno.app:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+bruno = ["templates/*.html", "static/*.js", "static/*.css"]

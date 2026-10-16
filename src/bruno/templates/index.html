@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Manage concepts and thinkers.">
+    <title>Bruno — Concepts and Thinkers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="wordmark" href="/" aria-label="Bruno home">bruno<span>.</span></a>
+        <p>Genealogies of Conceptual Thinking</p>
+        <span class="api-status" id="api-status" role="status"><span class="status-dot"></span> Checking API</span>
+      </div>
+    </header>
+    <main class="page">
+      <section class="intro">
+        <p class="eyebrow">A FIELD GUIDE TO IDEAS</p>
+        <h1>Trace the life<br>of an idea.</h1>
+        <p class="intro-copy">Keep concepts and the thinkers behind them in one thoughtful, searchable place.</p>
+      </section>
+
+      <nav class="tabs" aria-label="Choose a collection">
+        <button class="tab active" type="button" data-collection="concepts" aria-selected="true">Concepts <span id="concept-count">0</span></button>
+        <button class="tab" type="button" data-collection="thinkers" aria-selected="false">Thinkers <span id="thinker-count">0</span></button>
+      </nav>
+
+      <div class="workspace">
+        <section class="editor" aria-labelledby="form-heading">
+          <p class="eyebrow" id="form-eyebrow">NEW ENTRY</p>
+          <h2 id="form-heading">Add a concept</h2>
+          <form id="entry-form">
+            <label for="entry-name">Name</label>
+            <input id="entry-name" name="name" type="text" maxlength="200" placeholder="e.g. The public sphere" required>
+            <label id="details-label" for="entry-details">Description <span>Optional</span></label>
+            <textarea id="entry-details" name="details" rows="6" maxlength="10000" placeholder="What does this idea mean?"></textarea>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+            <div class="form-actions">
+              <button class="button button-primary" id="save-button" type="submit">Save concept <span aria-hidden="true">→</span></button>
+              <button class="button button-quiet" id="cancel-button" type="button" hidden>Cancel</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="entries" aria-labelledby="entries-heading">
+          <div class="entries-heading">
+            <div>
+              <p class="eyebrow">YOUR COLLECTION</p>
+              <h2 id="entries-heading">Concepts</h2>
+            </div>
+            <span class="entry-total" id="entry-total">0 entries</span>
+          </div>
+          <p id="list-error" class="form-error" role="alert" hidden></p>
+          <div id="entry-list" class="entry-list" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+    <footer>Made for following ideas wherever they lead.</footer>
+  </body>
+</html>
