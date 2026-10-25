@@ -1,0 +1,1127 @@
+﻿{
+    "value":  [
+                  {
+                      "description":  "",
+                      "id":  467,
+                      "name":  "key · contributions",
+                      "thinkers":  [
+                                       {
+                                           "id":  14,
+                                           "military_thinking_document_id":  "6ad3cda86a7f78515b6fe9f1",
+                                           "name":  "Alfred Thayer Mahan (1840-1914) (active 1859-1896)",
+                                           "wiki_text_document_id":  "6ad3cda86a7f78515b6fe9ef"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  12,
+                                           "military_thinking_document_id":  "6ad3c7656a7f78515b6fe9e5",
+                                           "name":  "John Frederick Charles Fuller (1878-1966) (active 1899-1933)",
+                                           "wiki_text_document_id":  "6ad3c7656a7f78515b6fe9e3"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9997463892948588,
+                                                    "thinker_id":  12,
+                                                    "topic_id":  10
+                                                },
+                                                {
+                                                    "probability":  0.9999999999809992,
+                                                    "thinker_id":  14,
+                                                    "topic_id":  10
+                                                },
+                                                {
+                                                    "probability":  0.9999999999809992,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  10
+                                                },
+                                                {
+                                                    "probability":  0.9999999999809992,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  10
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  466,
+                      "name":  "strategic · thinking · attrition · warfare · various",
+                      "thinkers":  [
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  18,
+                                           "military_thinking_document_id":  "6ad3e7982d35ae13d2db710a",
+                                           "name":  "Thomas Schelling (1921-2016)",
+                                           "wiki_text_document_id":  "6ad3e7982d35ae13d2db7108"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999962373149397,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  9
+                                                },
+                                                {
+                                                    "probability":  0.9999999917908053,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  9
+                                                },
+                                                {
+                                                    "probability":  0.9999991238161432,
+                                                    "thinker_id":  18,
+                                                    "topic_id":  9
+                                                },
+                                                {
+                                                    "probability":  0.9999999963472908,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  9
+                                                },
+                                                {
+                                                    "probability":  0.9999999340550975,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  9
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  465,
+                      "name":  "thinking · strategic · significant · contributions · particularly",
+                      "thinkers":  [
+                                       {
+                                           "id":  14,
+                                           "military_thinking_document_id":  "6ad3cda86a7f78515b6fe9f1",
+                                           "name":  "Alfred Thayer Mahan (1840-1914) (active 1859-1896)",
+                                           "wiki_text_document_id":  "6ad3cda86a7f78515b6fe9ef"
+                                       },
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  11,
+                                           "military_thinking_document_id":  "6ad3c61c6a7f78515b6fe9dd",
+                                           "name":  "Antoine-Henri Jomini (1779-1869)",
+                                           "wiki_text_document_id":  "6ad3c61c6a7f78515b6fe9db"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  16,
+                                           "military_thinking_document_id":  "6ad3dba36a7f78515b6fe9f9",
+                                           "name":  "Hans Delbrück (1848-1929)",
+                                           "wiki_text_document_id":  "6ad3dba36a7f78515b6fe9f7"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  24,
+                                           "military_thinking_document_id":  "6ad3f892ad87ef6aa0270820",
+                                           "name":  "John Boyd (1927-1997) (active 1945-1975)",
+                                           "wiki_text_document_id":  "6ad3f892ad87ef6aa027081e"
+                                       },
+                                       {
+                                           "id":  17,
+                                           "military_thinking_document_id":  "6ad3e39a70b0cccb5ec2498e",
+                                           "name":  "Sébastien Le Prestre (1707)",
+                                           "wiki_text_document_id":  "6ad3e39a70b0cccb5ec2498c"
+                                       },
+                                       {
+                                           "id":  18,
+                                           "military_thinking_document_id":  "6ad3e7982d35ae13d2db710a",
+                                           "name":  "Thomas Schelling (1921-2016)",
+                                           "wiki_text_document_id":  "6ad3e7982d35ae13d2db7108"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  11,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  14,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  16,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  17,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  18,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  0.9999999997921968,
+                                                    "thinker_id":  24,
+                                                    "topic_id":  8
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  8
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  464,
+                      "name":  "war · world war · clausewitz · world · politics",
+                      "thinkers":  [
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  13,
+                                           "military_thinking_document_id":  "6ad4aab03674d4bb090d30c4",
+                                           "name":  "Basil Liddell Hart (1895-1970)",
+                                           "wiki_text_document_id":  "6ad4aab03674d4bb090d30c2"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  22,
+                                           "military_thinking_document_id":  "6ad3f1590127fa3aaac45498",
+                                           "name":  "George C. Marshall (1880-1959)",
+                                           "wiki_text_document_id":  "6ad3f1590127fa3aaac45496"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999670017478016,
+                                                    "thinker_id":  13,
+                                                    "topic_id":  7
+                                                },
+                                                {
+                                                    "probability":  0.9989015968528658,
+                                                    "thinker_id":  22,
+                                                    "topic_id":  7
+                                                },
+                                                {
+                                                    "probability":  0.9772187146714285,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  7
+                                                },
+                                                {
+                                                    "probability":  0.9807661569981111,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  7
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  463,
+                      "name":  "warfare · strategy · influence · military strategy · impact",
+                      "thinkers":  [
+                                       {
+                                           "id":  13,
+                                           "military_thinking_document_id":  "6ad4aab03674d4bb090d30c4",
+                                           "name":  "Basil Liddell Hart (1895-1970)",
+                                           "wiki_text_document_id":  "6ad4aab03674d4bb090d30c2"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  16,
+                                           "military_thinking_document_id":  "6ad3dba36a7f78515b6fe9f9",
+                                           "name":  "Hans Delbrück (1848-1929)",
+                                           "wiki_text_document_id":  "6ad3dba36a7f78515b6fe9f7"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  12,
+                                           "military_thinking_document_id":  "6ad3c7656a7f78515b6fe9e5",
+                                           "name":  "John Frederick Charles Fuller (1878-1966) (active 1899-1933)",
+                                           "wiki_text_document_id":  "6ad3c7656a7f78515b6fe9e3"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9996585437639888,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9996028879900253,
+                                                    "thinker_id":  12,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9999999999978413,
+                                                    "thinker_id":  13,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9999923025838555,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9999503370186845,
+                                                    "thinker_id":  16,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9851955632342624,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9999999987299306,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  6
+                                                },
+                                                {
+                                                    "probability":  0.9984329593501012,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  6
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  462,
+                      "name":  "key · information · contributions · military strategy · based",
+                      "thinkers":  [
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  11,
+                                           "military_thinking_document_id":  "6ad3c61c6a7f78515b6fe9dd",
+                                           "name":  "Antoine-Henri Jomini (1779-1869)",
+                                           "wiki_text_document_id":  "6ad3c61c6a7f78515b6fe9db"
+                                       },
+                                       {
+                                           "id":  13,
+                                           "military_thinking_document_id":  "6ad4aab03674d4bb090d30c4",
+                                           "name":  "Basil Liddell Hart (1895-1970)",
+                                           "wiki_text_document_id":  "6ad4aab03674d4bb090d30c2"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  22,
+                                           "military_thinking_document_id":  "6ad3f1590127fa3aaac45498",
+                                           "name":  "George C. Marshall (1880-1959)",
+                                           "wiki_text_document_id":  "6ad3f1590127fa3aaac45496"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  24,
+                                           "military_thinking_document_id":  "6ad3f892ad87ef6aa0270820",
+                                           "name":  "John Boyd (1927-1997) (active 1945-1975)",
+                                           "wiki_text_document_id":  "6ad3f892ad87ef6aa027081e"
+                                       },
+                                       {
+                                           "id":  12,
+                                           "military_thinking_document_id":  "6ad3c7656a7f78515b6fe9e5",
+                                           "name":  "John Frederick Charles Fuller (1878-1966) (active 1899-1933)",
+                                           "wiki_text_document_id":  "6ad3c7656a7f78515b6fe9e3"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  18,
+                                           "military_thinking_document_id":  "6ad3e7982d35ae13d2db710a",
+                                           "name":  "Thomas Schelling (1921-2016)",
+                                           "wiki_text_document_id":  "6ad3e7982d35ae13d2db7108"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999999999999942,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9965835894416353,
+                                                    "thinker_id":  11,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999999984807753,
+                                                    "thinker_id":  12,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999998343287938,
+                                                    "thinker_id":  13,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9994465932641796,
+                                                    "thinker_id":  18,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999969034501907,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.999999997500991,
+                                                    "thinker_id":  22,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999999986939662,
+                                                    "thinker_id":  24,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999999827451617,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  5
+                                                },
+                                                {
+                                                    "probability":  0.9999989726793483,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  5
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  461,
+                      "name":  "battle · army · career · life · early",
+                      "thinkers":  [
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  25,
+                                           "military_thinking_document_id":  "6ad4a5e63674d4bb090d30c0",
+                                           "name":  "Hannibal (247-183 BC)",
+                                           "wiki_text_document_id":  "6ad4a5e63674d4bb090d30be"
+                                       },
+                                       {
+                                           "id":  26,
+                                           "military_thinking_document_id":  "6ad4ad5ffc18d6d7947e1a7b",
+                                           "name":  "Scipio Africanus (236 BC)",
+                                           "wiki_text_document_id":  "6ad4ad5ffc18d6d7947e1a79"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999999998553748,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  4
+                                                },
+                                                {
+                                                    "probability":  0.999999999140986,
+                                                    "thinker_id":  25,
+                                                    "topic_id":  4
+                                                },
+                                                {
+                                                    "probability":  1.0,
+                                                    "thinker_id":  26,
+                                                    "topic_id":  4
+                                                },
+                                                {
+                                                    "probability":  0.9998102250005325,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  4
+                                                },
+                                                {
+                                                    "probability":  0.999148224954693,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  4
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  460,
+                      "name":  "warfare · importance · siege · understanding · large",
+                      "thinkers":  [
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  16,
+                                           "military_thinking_document_id":  "6ad3dba36a7f78515b6fe9f9",
+                                           "name":  "Hans Delbrück (1848-1929)",
+                                           "wiki_text_document_id":  "6ad3dba36a7f78515b6fe9f7"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  24,
+                                           "military_thinking_document_id":  "6ad3f892ad87ef6aa0270820",
+                                           "name":  "John Boyd (1927-1997) (active 1945-1975)",
+                                           "wiki_text_document_id":  "6ad3f892ad87ef6aa027081e"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  17,
+                                           "military_thinking_document_id":  "6ad3e39a70b0cccb5ec2498e",
+                                           "name":  "Sébastien Le Prestre (1707)",
+                                           "wiki_text_document_id":  "6ad3e39a70b0cccb5ec2498c"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9988494073561349,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.8141606124818007,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.9211961177766307,
+                                                    "thinker_id":  16,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.9129292722569071,
+                                                    "thinker_id":  17,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.9999824058815258,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.6942962062569737,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.9748262210790788,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.6354369629142742,
+                                                    "thinker_id":  24,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.9848245248021199,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  3
+                                                },
+                                                {
+                                                    "probability":  0.8465140345663273,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  3
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  459,
+                      "name":  "war · german · army · world war · world",
+                      "thinkers":  [
+                                       {
+                                           "id":  14,
+                                           "military_thinking_document_id":  "6ad3cda86a7f78515b6fe9f1",
+                                           "name":  "Alfred Thayer Mahan (1840-1914) (active 1859-1896)",
+                                           "wiki_text_document_id":  "6ad3cda86a7f78515b6fe9ef"
+                                       },
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  11,
+                                           "military_thinking_document_id":  "6ad3c61c6a7f78515b6fe9dd",
+                                           "name":  "Antoine-Henri Jomini (1779-1869)",
+                                           "wiki_text_document_id":  "6ad3c61c6a7f78515b6fe9db"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  22,
+                                           "military_thinking_document_id":  "6ad3f1590127fa3aaac45498",
+                                           "name":  "George C. Marshall (1880-1959)",
+                                           "wiki_text_document_id":  "6ad3f1590127fa3aaac45496"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  20,
+                                           "military_thinking_document_id":  "6ad3ed8874244599eefc202f",
+                                           "name":  "Otto von Bismarck (1815-1898)",
+                                           "wiki_text_document_id":  "6ad3ed8874244599eefc202d"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999075831758535,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9997806178263443,
+                                                    "thinker_id":  11,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9497998005837871,
+                                                    "thinker_id":  14,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9999780544918694,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9979219715117876,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9906631651262532,
+                                                    "thinker_id":  20,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9554549067449337,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9999951521068668,
+                                                    "thinker_id":  22,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9999953951442546,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9797851087920376,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  2
+                                                },
+                                                {
+                                                    "probability":  0.9800581555293074,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  2
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  458,
+                      "name":  "Unclassified topic (remainder)",
+                      "thinkers":  [
+                                       {
+                                           "id":  14,
+                                           "military_thinking_document_id":  "6ad3cda86a7f78515b6fe9f1",
+                                           "name":  "Alfred Thayer Mahan (1840-1914) (active 1859-1896)",
+                                           "wiki_text_document_id":  "6ad3cda86a7f78515b6fe9ef"
+                                       },
+                                       {
+                                           "id":  13,
+                                           "military_thinking_document_id":  "6ad4aab03674d4bb090d30c4",
+                                           "name":  "Basil Liddell Hart (1895-1970)",
+                                           "wiki_text_document_id":  "6ad4aab03674d4bb090d30c2"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  24,
+                                           "military_thinking_document_id":  "6ad3f892ad87ef6aa0270820",
+                                           "name":  "John Boyd (1927-1997) (active 1945-1975)",
+                                           "wiki_text_document_id":  "6ad3f892ad87ef6aa027081e"
+                                       },
+                                       {
+                                           "id":  12,
+                                           "military_thinking_document_id":  "6ad3c7656a7f78515b6fe9e5",
+                                           "name":  "John Frederick Charles Fuller (1878-1966) (active 1899-1933)",
+                                           "wiki_text_document_id":  "6ad3c7656a7f78515b6fe9e3"
+                                       },
+                                       {
+                                           "id":  17,
+                                           "military_thinking_document_id":  "6ad3e39a70b0cccb5ec2498e",
+                                           "name":  "Sébastien Le Prestre (1707)",
+                                           "wiki_text_document_id":  "6ad3e39a70b0cccb5ec2498c"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  12,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9988605423282457,
+                                                    "thinker_id":  13,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  14,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  17,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  24,
+                                                    "topic_id":  1
+                                                },
+                                                {
+                                                    "probability":  0.9999999972808062,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  1
+                                                }
+                                            ]
+                  },
+                  {
+                      "description":  "",
+                      "id":  457,
+                      "name":  "forces · theory · strategies · achieve · force",
+                      "thinkers":  [
+                                       {
+                                           "id":  14,
+                                           "military_thinking_document_id":  "6ad3cda86a7f78515b6fe9f1",
+                                           "name":  "Alfred Thayer Mahan (1840-1914) (active 1859-1896)",
+                                           "wiki_text_document_id":  "6ad3cda86a7f78515b6fe9ef"
+                                       },
+                                       {
+                                           "id":  27,
+                                           "military_thinking_document_id":  "6ad3fd2ab3b8830e8a8c23b8",
+                                           "name":  "Alfred von Schlieffen (1833-1913)",
+                                           "wiki_text_document_id":  "6ad3fd2ab3b8830e8a8c23b6"
+                                       },
+                                       {
+                                           "id":  11,
+                                           "military_thinking_document_id":  "6ad3c61c6a7f78515b6fe9dd",
+                                           "name":  "Antoine-Henri Jomini (1779-1869)",
+                                           "wiki_text_document_id":  "6ad3c61c6a7f78515b6fe9db"
+                                       },
+                                       {
+                                           "id":  13,
+                                           "military_thinking_document_id":  "6ad4aab03674d4bb090d30c4",
+                                           "name":  "Basil Liddell Hart (1895-1970)",
+                                           "wiki_text_document_id":  "6ad4aab03674d4bb090d30c2"
+                                       },
+                                       {
+                                           "id":  28,
+                                           "military_thinking_document_id":  "6ad4cc4302dc8d09692ffebc",
+                                           "name":  "Carl von Clausewitz (1780-1831) (active 1792-1831)",
+                                           "wiki_text_document_id":  "6ad4cc4302dc8d09692ffeba"
+                                       },
+                                       {
+                                           "id":  15,
+                                           "military_thinking_document_id":  "6ad3d00f6a7f78515b6fe9f5",
+                                           "name":  "Erich von Falkenhayn (1861-1922)",
+                                           "wiki_text_document_id":  "6ad3d0096a7f78515b6fe9f3"
+                                       },
+                                       {
+                                           "id":  22,
+                                           "military_thinking_document_id":  "6ad3f1590127fa3aaac45498",
+                                           "name":  "George C. Marshall (1880-1959)",
+                                           "wiki_text_document_id":  "6ad3f1590127fa3aaac45496"
+                                       },
+                                       {
+                                           "id":  16,
+                                           "military_thinking_document_id":  "6ad3dba36a7f78515b6fe9f9",
+                                           "name":  "Hans Delbrück (1848-1929)",
+                                           "wiki_text_document_id":  "6ad3dba36a7f78515b6fe9f7"
+                                       },
+                                       {
+                                           "id":  21,
+                                           "military_thinking_document_id":  "6ad3eeee0127fa3aaac45494",
+                                           "name":  "Helmuth von Moltke (1800-1891)",
+                                           "wiki_text_document_id":  "6ad3eeee0127fa3aaac45492"
+                                       },
+                                       {
+                                           "id":  19,
+                                           "military_thinking_document_id":  "6ad3ea8874244599eefc202b",
+                                           "name":  "Herman Kahn (1922-1983)",
+                                           "wiki_text_document_id":  "6ad3ea8874244599eefc2029"
+                                       },
+                                       {
+                                           "id":  24,
+                                           "military_thinking_document_id":  "6ad3f892ad87ef6aa0270820",
+                                           "name":  "John Boyd (1927-1997) (active 1945-1975)",
+                                           "wiki_text_document_id":  "6ad3f892ad87ef6aa027081e"
+                                       },
+                                       {
+                                           "id":  12,
+                                           "military_thinking_document_id":  "6ad3c7656a7f78515b6fe9e5",
+                                           "name":  "John Frederick Charles Fuller (1878-1966) (active 1899-1933)",
+                                           "wiki_text_document_id":  "6ad3c7656a7f78515b6fe9e3"
+                                       },
+                                       {
+                                           "id":  10,
+                                           "military_thinking_document_id":  "6ad4d28c1a12258aa3eda51b",
+                                           "name":  "Sun Tzu (544-496 BC)",
+                                           "wiki_text_document_id":  "6ad4d28c1a12258aa3eda519"
+                                       },
+                                       {
+                                           "id":  17,
+                                           "military_thinking_document_id":  "6ad3e39a70b0cccb5ec2498e",
+                                           "name":  "Sébastien Le Prestre (1707)",
+                                           "wiki_text_document_id":  "6ad3e39a70b0cccb5ec2498c"
+                                       },
+                                       {
+                                           "id":  18,
+                                           "military_thinking_document_id":  "6ad3e7982d35ae13d2db710a",
+                                           "name":  "Thomas Schelling (1921-2016)",
+                                           "wiki_text_document_id":  "6ad3e7982d35ae13d2db7108"
+                                       },
+                                       {
+                                           "id":  23,
+                                           "military_thinking_document_id":  "6ad3f69acf3183dc1355ab49",
+                                           "name":  "Võ Nguyên Giáp (1911-2013)",
+                                           "wiki_text_document_id":  "6ad3f69acf3183dc1355ab47"
+                                       }
+                                   ],
+                      "topic_assignments":  [
+                                                {
+                                                    "probability":  0.9669615827932855,
+                                                    "thinker_id":  10,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.873727704721518,
+                                                    "thinker_id":  11,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9981668372881284,
+                                                    "thinker_id":  12,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9998567928609767,
+                                                    "thinker_id":  13,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9290786167401125,
+                                                    "thinker_id":  14,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9828398985982734,
+                                                    "thinker_id":  15,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9974570082161496,
+                                                    "thinker_id":  16,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9974079258978632,
+                                                    "thinker_id":  17,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9890469288015318,
+                                                    "thinker_id":  18,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9998801337346673,
+                                                    "thinker_id":  19,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.993469257471457,
+                                                    "thinker_id":  21,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9999896318636794,
+                                                    "thinker_id":  22,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9986243938414335,
+                                                    "thinker_id":  23,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9976309244277672,
+                                                    "thinker_id":  24,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.8690478910677847,
+                                                    "thinker_id":  27,
+                                                    "topic_id":  0
+                                                },
+                                                {
+                                                    "probability":  0.9973665774342819,
+                                                    "thinker_id":  28,
+                                                    "topic_id":  0
+                                                }
+                                            ]
+                  }
+              ],
+    "Count":  11
+}

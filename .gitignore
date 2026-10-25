@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Downloaded Wikipedia pages are local research files.
+wiki/*.html
+dbpedia/*.json

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A source document from Bruno.">
+    <title>{{ title }} — Bruno</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner document-header">
+        <a class="brand" href="/" aria-label="Bruno, assemblies of conceptual thinking">
+          <span class="wordmark">bruno<span>.</span></span>
+        </a>
+        <a class="document-back" href="/">Back to Bruno <span aria-hidden="true">→</span></a>
+      </div>
+    </header>
+    <main class="document-page">
+      <p class="eyebrow">Document</p>
+      <h1 class="document-title">{{ title }}</h1>
+      {% if source_url %}
+        <p class="document-source"><a href="{{ source_url }}" target="_blank" rel="noopener noreferrer">View original source</a></p>
+      {% endif %}
+
+      {% if source_label == "Ollama analysis" %}
+        {% include "info_ollama.html" %}
+      {% elif source_label == "DBpedia profile" %}
+        {% include "info_dbpedia.html" %}
+      {% endif %}
+
+      {% if facts %}
+        <section class="document-section document-facts" aria-labelledby="facts-heading">
+          <h2 id="facts-heading">Key facts</h2>
+          <dl>
+            {% for fact in facts %}
+              <div class="document-fact">
+                <dt>{{ fact.label }}</dt>
+                <dd>{{ fact.value }}</dd>
+              </div>
+            {% endfor %}
+          </dl>
+        </section>
+      {% endif %}
+
+      {% if taxonomies %}
+        <section class="document-section" aria-label="Classification">
+          <p class="eyebrow">CLASSIFICATION</p>
+          <div class="taxonomy-groups">
+            {% for group in taxonomies %}
+              <section class="taxonomy-group" aria-label="{{ group['heading'] }}">
+                <h3>{{ group['heading'] }}</h3>
+                {% if group['items'] %}
+                  <ul>
+                    {% for item in group['items'] %}
+                      <li><a href="{{ item['url'] }}" target="_blank" rel="noopener noreferrer">{{ item['label'] }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="taxonomy-empty">No entries provided by DBpedia.</p>
+                {% endif %}
+              </section>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+
+      {% if prompt %}
+        <section class="document-section document-disclosure document-prompt-section">
+          <details>
+            <summary>Prompt sent to Ollama</summary>
+            <pre class="document-prompt">{{ prompt }}</pre>
+          </details>
+        </section>
+      {% endif %}
+
+      {% if editable_text is defined and editable_text is not none %}
+        <section class="document-section document-editor" aria-label="{{ source_label }}">
+          <textarea id="document-text-editor" class="document-text-editor" rows="30" data-document-id="{{ document_id }}" aria-label="{{ source_label }} text">{{ editable_text }}</textarea>
+          <div class="document-editor-actions">
+            <button type="button" id="document-save-button">Save</button>
+            <span id="document-save-status" role="status"></span>
+          </div>
+        </section>
+        <script src="{{ url_for('static', filename='document.js') }}"></script>
+      {% elif paragraphs %}
+        {% if source_label == "Ollama analysis" and word_count is defined %}
+          <div class="document-section document-response-meta">
+            <h2>Ollama response</h2>
+            <p class="response-stats">Response length: <strong>{{ word_count }}</strong> words</p>
+          </div>
+        {% endif %}
+        <section class="document-section document-text" aria-label="{{ source_label }}">
+          {% for paragraph in paragraphs %}
+            <p>{{ paragraph }}</p>
+          {% endfor %}
+        </section>
+      {% endif %}
+    </main>
+    {% include "latour_quote.html" %}
+  </body>
+</html>

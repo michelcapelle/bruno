@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Topic visualizations — Bruno</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body class="visualization-page">
+    {% if plot_html %}
+      {{ plot_html }}
+      {% if plot_explanation %}
+        <p class="visualization-explanation">{{ plot_explanation }}</p>
+      {% endif %}
+    {% else %}
+      <main class="visualization-message">
+        <h1>Topic visualizations</h1>
+        <p>{{ error or message or "Generate topics before viewing visualizations." }}</p>
+      </main>
+    {% endif %}
+    <script>
+      window.addEventListener("message", (event) => {
+        if (
+          event.source !== window.parent
+          || !event.data
+          || event.data.type !== "thinker-search"
+        ) {
+          return;
+        }
+        const query = String(event.data.query || "").trim().toLocaleLowerCase();
+        for (const section of document.querySelectorAll(".approximate-distribution")) {
+          section.hidden = !section.dataset.searchText.includes(query);
+        }
+        reportHeight();
+      });
+      const reportHeight = () => {
+        const height = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight,
+        );
+        parent.postMessage({ type: "visualization-height", height }, "*");
+      };
+      new ResizeObserver(reportHeight).observe(document.documentElement);
+      window.addEventListener("load", reportHeight);
+      reportHeight();
+    </script>
+  </body>
+</html>

@@ -3,61 +3,187 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Manage concepts and thinkers.">
-    <title>Bruno — Concepts and Thinkers</title>
+    <meta name="description" content="Trace the topics and thinkers shaping military strategic thought.">
+    <title>Bruno — Assemblies of Conceptual Thinking</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
   </head>
   <body>
     <header class="site-header">
       <div class="header-inner">
-        <a class="wordmark" href="/" aria-label="Bruno home">bruno<span>.</span></a>
-        <p>Genealogies of Conceptual Thinking</p>
-        <span class="api-status" id="api-status" role="status"><span class="status-dot"></span> Checking API</span>
+        <a class="brand" href="/" aria-label="Bruno, assemblies of conceptual thinking">
+          <span class="wordmark">bruno<span>.</span></span>
+          <svg class="genealogy-mark" viewBox="0 0 164 36" aria-hidden="true">
+            <path class="genealogy-line" d="M14 16h28 M50 16c9 0 10-9 19-9h13 M50 16c9 0 10 9 19 9h13 M90 7c9 0 9 9 18 9 M90 25c9 0 9-9 18-9h24" />
+            <path class="genealogy-line" d="M12 32h132" />
+            <path class="genealogy-tick" d="M23 29v6 M51 29v6 M82 29v6 M116 29v6 M144 29v6" />
+            <circle class="thinker-node" cx="10" cy="16" r="5" />
+            <circle class="thinker-core" cx="10" cy="16" r="1.4" />
+            <path class="concept-node" d="m46 10 6 6-6 6-6-6z" />
+            <circle class="thinker-node" cx="86" cy="7" r="4.5" />
+            <circle class="thinker-core" cx="86" cy="7" r="1.2" />
+            <path class="concept-node" d="m86 20 5 5-5 5-5-5z" />
+            <path class="concept-node" d="m114 10 6 6-6 6-6-6z" />
+            <path class="genealogy-arrow" d="M139 12l6 4-6 4" />
+          </svg>
+        </a>
+        <div class="connection-status" role="status" aria-live="polite">
+          <span class="api-status" id="api-status"><span class="status-dot"></span><span class="status-label">Checking API</span></span>
+          <span class="api-status" id="language-model-status"><span class="status-dot"></span><span class="status-label">Checking LLM</span></span>
+        </div>
       </div>
     </header>
     <main class="page">
       <section class="intro">
-        <p class="eyebrow">A FIELD GUIDE TO IDEAS</p>
-        <h1>Trace the life<br>of an idea.</h1>
-        <p class="intro-copy">Keep concepts and the thinkers behind them in one thoughtful, searchable place.</p>
+        <p class="eyebrow">A GENEALOGY TO MILITARY STRATEGIC THOUGHT</p>
+        <h1>Assemblies of Conceptual Thinking</h1>
+        <p class="intro-copy">Trace the ideas of influential strategists</p>
       </section>
 
-      <nav class="tabs" aria-label="Choose a collection">
-        <button class="tab active" type="button" data-collection="concepts" aria-selected="true">Concepts <span id="concept-count">0</span></button>
+      <nav class="tabs" aria-label="Choose a section">
+        <button class="tab active" type="button" data-collection="about" aria-selected="true">About</button>
         <button class="tab" type="button" data-collection="thinkers" aria-selected="false">Thinkers <span id="thinker-count">0</span></button>
+        <button class="tab" type="button" data-collection="concepts" aria-selected="false">Topics <span id="concept-count">0</span></button>
+        <button class="tab" type="button" data-collection="visualizations" aria-selected="false">Visualizations <span id="visualization-count" aria-label="8 available visualizations">8</span></button>
       </nav>
 
-      <div class="workspace">
-        <section class="editor" aria-labelledby="form-heading">
-          <p class="eyebrow" id="form-eyebrow">NEW ENTRY</p>
-          <h2 id="form-heading">Add a concept</h2>
-          <form id="entry-form">
-            <label for="entry-name">Name</label>
-            <input id="entry-name" name="name" type="text" maxlength="200" placeholder="e.g. The public sphere" required>
-            <label id="details-label" for="entry-details">Description <span>Optional</span></label>
-            <textarea id="entry-details" name="details" rows="6" maxlength="10000" placeholder="What does this idea mean?"></textarea>
-            <p id="form-error" class="form-error" role="alert" hidden></p>
-            <div class="form-actions">
-              <button class="button button-primary" id="save-button" type="submit">Save concept <span aria-hidden="true">→</span></button>
-              <button class="button button-quiet" id="cancel-button" type="button" hidden>Cancel</button>
-            </div>
-          </form>
+      <section class="about-panel" id="about-panel" hidden>
+        <section class="document-section">
+          <h2>About Bruno</h2>
+          <p>Bruno is an exploratory tool to trace how ideas and concepts (as topics) appear across influential military strategic thinkers. It combines processed Wikipedia texts, (Wikipedia) DBpedia metadata, and Ollama LLM prompt analyses to generate topics and approximate which thinkers are associated with them.</p>
+          <ol>
+            <li><strong>Thinkers</strong><span>Add thinkers and their associated texts to generate Ollama LLM analyses on their contributions to military strategy.</span></li>
+            <li><strong>Topics</strong><span>Generated topics using the BERTopic algorithm, their keywords and statistically assigned thinkers.</span></li>
+            <li><strong>Visualizations</strong><span>Discover how topics and thinkers relate to each other.</span></li>
+          </ol>
         </section>
+      </section>
+
+      <div class="workspace">
+        <div class="concept-tools">
+          <section class="editor" aria-labelledby="form-heading">
+            <p class="eyebrow" id="form-eyebrow">NEW ENTRY</p>
+            <h2 id="form-heading">Add a thinker</h2>
+            <form id="entry-form">
+              <label id="topic-source-label" for="topic-source" hidden>Text source</label>
+              <select id="topic-source" hidden>
+                <option value="ollama">Ollama analysis</option>
+                <option value="wikipedia" selected>Wikipedia text</option>
+              </select>
+              <label id="topic-count-label" for="topic-count" hidden>Number of topics (optional)</label>
+              <input id="topic-count" type="number" min="1" step="1" placeholder="Automatic" aria-describedby="topic-count-help" hidden>
+              <p class="concept-generation-help topic-count-help" id="topic-count-help" hidden>Leave blank to let BERTopic choose automatically.</p>
+              <div id="topic-model-options" hidden>
+                <label for="topic-min-df">Word frequency threshold</label>
+                <input id="topic-min-df" type="number" min="1" step="1" value="3" required>
+                <label for="topic-max-words">Compound words</label>
+                <input id="topic-max-words" type="number" min="1" step="1" value="3" required>
+                <label for="topic-top-n-words">Top n words</label>
+                <input id="topic-top-n-words" type="number" min="1" step="1" value="15" required>
+                <label for="topic-diversity">Diversity</label>
+                <input id="topic-diversity" type="number" min="0" max="1" step="0.1" value="0.2" required>
+              </div>
+              <label id="name-label" for="entry-name" hidden>Name</label>
+              <input id="entry-name" name="name" type="text" maxlength="200" placeholder="e.g. maneuver warfare" hidden>
+              <label id="details-label" for="entry-wikipedia">Wikipedia source</label>
+              <textarea id="entry-details" name="details" rows="6" maxlength="10000" placeholder="What does this idea mean?" hidden></textarea>
+              <input id="entry-wikipedia" type="url" maxlength="10000" placeholder="https://en.wikipedia.org/wiki/Carl_von_Clausewitz">
+              <p class="thinker-suggestions" id="wikipedia-suggestions"><a href="https://en.wikipedia.org/wiki/List_of_military_theorists_and_writers" target="_blank" rel="noopener noreferrer">Browse Wikipedia military theorists and writers</a></p>
+              <label id="ollama-prompt-label" for="ollama-prompt">Ollama LLM prompt</label>
+              <textarea id="ollama-prompt" rows="4" maxlength="5000">What are the thinker's contributions to military strategic thought?</textarea>
+              <label id="response-word-count-label" for="response-word-count">Ollama LLM answer length (words)</label>
+              <input id="response-word-count" type="number" min="100" max="1000" step="1" value="500" aria-describedby="response-word-count-help">
+              <p class="thinker-suggestions response-word-count-help" id="response-word-count-help">Choose between 100 and 1000 words.</p>
+              <p id="form-error" class="form-error" role="alert" hidden></p>
+              <p id="form-status" class="form-status" role="status" aria-live="polite" hidden></p>
+              <div class="form-actions">
+                <button class="button button-primary" id="save-button" type="submit">Process thinker <span aria-hidden="true">→</span></button>
+                <button class="button button-quiet" id="cancel-button" type="button" hidden>Cancel</button>
+              </div>
+            </form>
+          </section>
+          <section class="thinker-information" id="thinker-information" aria-label="Information about thinkers">
+            {% include "info_dbpedia.html" %}
+            {% include "info_ollama.html" %}
+          </section>
+          <section class="topic-search-box" id="topic-search-box" hidden aria-labelledby="topic-search-heading">
+            <h3 id="topic-search-heading">Find related topics</h3>
+            <form id="topic-search-form">
+              <label for="topic-search-concept">Topic</label>
+              <input id="topic-search-concept" type="text" maxlength="500" placeholder="e.g. logistics, intelligence, or maneuver" required>
+              <div class="form-actions">
+                <button class="button button-primary" id="topic-search-button" type="submit">Find topics <span aria-hidden="true">→</span></button>
+              </div>
+            </form>
+            <p class="form-error" id="topic-search-error" role="alert" hidden></p>
+            <ul class="topic-search-results" id="topic-search-results" aria-live="polite"></ul>
+          </section>
+          <section class="topic-information" id="topic-information" hidden aria-label="Information about topic generation">
+            {% include "info_bertopic.html" %}
+          </section>
+        </div>
 
         <section class="entries" aria-labelledby="entries-heading">
           <div class="entries-heading">
             <div>
-              <p class="eyebrow">YOUR COLLECTION</p>
-              <h2 id="entries-heading">Concepts</h2>
+              <p class="eyebrow">COLLECTION</p>
+              <h2 id="entries-heading">Thinkers</h2>
             </div>
             <span class="entry-total" id="entry-total">0 entries</span>
           </div>
+          <input id="thinker-search" type="search" placeholder="Search thinkers" aria-label="Search thinkers" hidden>
           <p id="list-error" class="form-error" role="alert" hidden></p>
           <div id="entry-list" class="entry-list" aria-live="polite"></div>
         </section>
       </div>
+      <section class="visualizations" id="visualizations" hidden aria-label="Topic visualizations">
+        <section class="topic-distribution-strip" aria-labelledby="topic-distribution-heading">
+          <div class="topic-distribution-heading">
+            <div>
+              <p class="eyebrow">TOPIC LEGEND</p>
+              <h2 id="topic-distribution-heading">Approximate Distributions</h2>
+            </div>
+            <p class="topic-distribution-help">Click a topic to see its key terms and the five thinkers with the highest percentages.</p>
+          </div>
+          <div class="topic-distribution-bubbles" id="topic-distribution-bubbles" aria-label="Topics"></div>
+          <p class="topic-distribution-status" id="topic-distribution-status" role="status" aria-live="polite">Loading topic distributions…</p>
+          <button class="button button-quiet topic-distribution-retry" id="topic-distribution-retry" type="button" hidden>Retry loading topics</button>
+          <section class="topic-distribution-panel" id="topic-distribution-panel" hidden>
+            <div class="topic-distribution-controls">
+              <input id="distribution-thinker-search" type="search" placeholder="Search thinkers" aria-label="Search thinkers in approximate distributions">
+            </div>
+            <div id="topic-distribution-panel-assignments"></div>
+          </section>
+        </section>
+        <div class="visualization-workspace">
+          <aside class="visualization-controls">
+            <section class="visualization-selector" aria-labelledby="visualization-selector-heading">
+              <h2 id="visualization-selector-heading">Visualizations</h2>
+              <div class="visualization-options" role="group" aria-label="Choose a visualization">
+                <button class="visualization-option active" type="button" data-visualization="topics" aria-pressed="true">Intertopic Distance</button>
+                <button class="visualization-option" type="button" data-visualization="heatmap" aria-pressed="false">Similarity Heatmap</button>
+                <button class="visualization-option" type="button" data-visualization="topics-over-time" aria-pressed="false">Over Time</button>
+                <button class="visualization-option" type="button" data-visualization="topics-per-class" aria-pressed="false">Per Thinker</button>
+                <button class="visualization-option" type="button" data-visualization="approximate-distribution" aria-pressed="false">Approximate Distributions</button>
+                <button class="visualization-option" type="button" data-visualization="hierarchy" aria-pressed="false">Hierarchical Clustering</button>
+                <button class="visualization-option" type="button" data-visualization="visualize-documents" aria-pressed="false">Thinkers</button>
+                <button class="visualization-option" type="button" data-visualization="hierarchical-documents" aria-pressed="false">Hierarchical Thinkers & Topics</button>
+              </div>
+            </section>
+          </aside>
+          <section class="document-section visualization-page visualization-display">
+            <p class="visualization-loading" id="visualization-loading" role="status" aria-live="polite" hidden></p>
+            <p class="form-error" id="visualization-error" role="alert" hidden></p>
+            <iframe
+              id="topics-visualization"
+              title="Topic visualization"
+              loading="lazy"
+              sandbox="allow-scripts allow-downloads"
+            ></iframe>
+          </section>
+        </div>
+      </section>
     </main>
-    <footer>Made for following ideas wherever they lead.</footer>
+    {% include "latour_quote.html" %}
   </body>
 </html>

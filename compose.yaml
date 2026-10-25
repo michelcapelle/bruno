@@ -1,0 +1,83 @@
+name: bruno
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        ollama serve &
+        server_pid=$$!
+        trap 'kill "$$server_pid"; wait "$$server_pid"' TERM INT
+        until OLLAMA_HOST=http://127.0.0.1:11434 ollama list >/dev/null 2>&1; do
+          sleep 1
+        done
+        OLLAMA_HOST=http://127.0.0.1:11434 ollama pull "$$BRUNO_LLM_MODEL"
+        wait "$$server_pid"
+    environment:
+      BRUNO_LLM_MODEL: ${BRUNO_LLM_MODEL:-qwen2.5:3b}
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "OLLAMA_HOST=http://127.0.0.1:11434 ollama list | grep -Fq '${BRUNO_LLM_MODEL:-qwen2.5:3b}'",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 120
+      start_period: 30s
+
+  mongodb:
+    image: mongo:8.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${BRUNO_MONGODB_PORT:-27017}:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: bruno-api
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    environment:
+      BRUNO_DATABASE: /app/instance/bruno.sqlite3
+      BRUNO_LLM_MODEL: ${BRUNO_LLM_MODEL:-qwen2.5:3b}
+      BRUNO_LLM_URL: http://ollama:11434/api/generate
+      BRUNO_MONGODB_URI: mongodb://mongodb:27017
+      BRUNO_MONGODB_DATABASE: bruno
+      HOST: 0.0.0.0
+      PORT: "5000"
+    ports:
+      - "127.0.0.1:${BRUNO_PORT:-5000}:5000"
+    volumes:
+      - ./instance:/app/instance
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  mongodb-data:
+  ollama-data:
