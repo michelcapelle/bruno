@@ -7,10 +7,12 @@ import json
 import math
 import os
 import re
+import shutil
 import sqlite3
 import uuid
 from collections.abc import Callable, Generator, Iterable
 from contextlib import contextmanager
+from datetime import datetime
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
@@ -22,7 +24,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request, send_from_directory
 from markupsafe import Markup
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
@@ -35,6 +37,14 @@ MIN_RESPONSE_WORD_COUNT = 100
 MAX_RESPONSE_WORD_COUNT = 1000
 DEFAULT_OLLAMA_PROMPT = (
     "What are the thinker's contributions to military strategic thought?"
+)
+DEFAULT_SEED_TOPICS = (
+    "western", "eastern", "societal", "political", "ideological", "indirect",
+    "decisive", "air", "maritime", "cyber", "attrition", "maneuver",
+    "technological", "nuclear", "innovative", "human factor",
+    "decision-making", "psychological", "sociological", "emotional",
+    "irrational", "system", "disruption", "deterrence", "paralysis",
+    "hybrid", "grey zone", "insurgency",
 )
 MAX_OLLAMA_PROMPT_LENGTH = 5000
 REMOTE_REQUEST_TIMEOUT = 20
@@ -81,6 +91,14 @@ def create_app(
     db_path.parent.mkdir(parents=True, exist_ok=True)
     app.config["DATABASE"] = str(db_path)
     app.config["BERTOPIC_MODEL_PATH"] = str(db_path.parent / "bertopic_model")
+    data_path = Path(os.environ.get("BRUNO_DATA_PATH", "data"))
+    data_path.mkdir(parents=True, exist_ok=True)
+    app.config["DATA_PATH"] = str(data_path)
+    allowed_origins = {
+        origin.strip().rstrip("/")
+        for origin in os.environ.get("BRUNO_ALLOWED_ORIGINS", "").split(",")
+        if origin.strip()
+    }
     client = mongo_client or MongoClient(
         os.environ.get("BRUNO_MONGODB_URI", "mongodb://localhost:27017"),
         serverSelectionTimeoutMS=3000,
@@ -94,6 +112,29 @@ def create_app(
     def index():
         return render_template("index.html")
 
+    @app.after_request
+    def add_cors_headers(response):
+        origin = request.headers.get("Origin", "").rstrip("/")
+        if origin and (origin in allowed_origins or "*" in allowed_origins):
+            response.headers["Access-Control-Allow-Origin"] = (
+                "*" if "*" in allowed_origins else origin
+            )
+            response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+            response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, PUT, DELETE, OPTIONS"
+            response.headers.add("Vary", "Origin")
+        return response
+
+    @app.get("/essay.pdf")
+    def essay():
+        essay_directory = Path(__file__).resolve().parents[2]
+        if not (essay_directory / "essay.pdf").is_file():
+            essay_directory = Path.cwd()
+        return send_from_directory(
+            str(essay_directory),
+            "essay.pdf",
+            mimetype="application/pdf",
+        )
+
     @app.get("/api")
     def api_index():
         return jsonify(
@@ -105,6 +146,106 @@ def create_app(
                 "visualizations": "/visualizations/topics",
             }
         )
+
+    @app.get("/data/<path:filename>")
+    def cached_data(filename: str):
+        if filename not in {
+            "thinkers.json",
+            "concepts.json",
+            "status-language-model.json",
+            "manifest.json",
+        }:
+            return jsonify({"error": "Cached data not found."}), 404
+        return send_from_directory(app.config["DATA_PATH"], filename)
+
+    @app.post("/api/export")
+    def export_data():
+        try:
+            data_directory = Path(app.config["DATA_PATH"])
+            data_directory.mkdir(parents=True, exist_ok=True)
+            for child in data_directory.iterdir():
+                if child.is_dir():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
+            with _database(app.config["DATABASE"]) as connection:
+                thinkers = [
+                    _serialize(row)
+                    for row in connection.execute(
+                        'SELECT * FROM "thinkers" ORDER BY id DESC'
+                    ).fetchall()
+                ]
+                concepts = [
+                    _serialize_concept(row, connection)
+                    for row in connection.execute(
+                        'SELECT * FROM "concepts" ORDER BY id DESC'
+                    ).fetchall()
+                ]
+            document_id_fields = (
+                "wiki_document_id",
+                "wiki_text_document_id",
+                "dbpedia_document_id",
+                "military_thinking_document_id",
+            )
+            document_ids = sorted(
+                {
+                    thinker[field]
+                    for thinker in thinkers
+                    for field in document_id_fields
+                    if thinker.get(field)
+                }
+            )
+            files = {
+                "thinkers.json": thinkers,
+                "concepts.json": concepts,
+                "status-language-model.json": {
+                    "connected": _language_model_connected()
+                },
+            }
+            documents_directory = data_directory / "documents"
+            documents_directory.mkdir(parents=True, exist_ok=True)
+            for filename, content in files.items():
+                temporary_path = data_directory / f".{filename}.tmp"
+                target_path = data_directory / filename
+                temporary_path.write_text(
+                    json.dumps(content, ensure_ascii=False, indent=2),
+                    encoding="utf-8",
+                )
+                temporary_path.replace(target_path)
+            for document_id in document_ids:
+                try:
+                    mongo_id = ObjectId(document_id)
+                except InvalidId as error:
+                    raise ValueError(
+                        f"Referenced document identifier is invalid: {document_id}"
+                    ) from error
+                document = app.config["MONGO_DOCUMENTS"].find_one({"_id": mongo_id})
+                if document is None:
+                    raise ValueError(f"Referenced document was not found: {document_id}")
+                content = document.get("content")
+                if not isinstance(content, (bytes, bytearray)):
+                    raise ValueError(
+                        f"Referenced document has invalid content: {document_id}"
+                    )
+                temporary_path = documents_directory / f".{document_id}.tmp"
+                target_path = documents_directory / document_id
+                temporary_path.write_bytes(bytes(content))
+                temporary_path.replace(target_path)
+            manifest = {
+                "files": sorted(
+                    [*files, *(f"documents/{document_id}" for document_id in document_ids)]
+                ),
+                "exported_at": datetime.now().isoformat(),
+            }
+            manifest_path = data_directory / ".manifest.json.tmp"
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+            manifest_path.replace(data_directory / "manifest.json")
+        except (OSError, ValueError, sqlite3.Error, PyMongoError) as error:
+            return jsonify({"error": f"Could not export data: {error}"}), 500
+        return jsonify(manifest)
 
     @app.post("/api/concepts/find-topics")
     def find_topics():
@@ -486,11 +627,22 @@ def create_app(
                         hierarchical_topics = topic_model.hierarchical_topics(
                             sentence_documents
                         )
+                        hierarchical_topics = _normalize_hierarchical_topics(
+                            hierarchical_topics,
+                            topic_model.get_topics(),
+                        )
+                        hierarchy_levels = len(hierarchical_topics)
+                        if hasattr(hierarchical_topics, "columns") and (
+                            "Distance" in hierarchical_topics.columns
+                        ):
+                            hierarchy_levels = int(
+                                hierarchical_topics["Distance"].notna().sum()
+                            )
                         figure = topic_model.visualize_hierarchical_documents(
                             sentence_documents,
-                            hierarchical_topics,
-                            nr_levels=max(1, min(10, len(hierarchical_topics))),
+                            hierarchical_topics=hierarchical_topics,
                             hide_document_hover=True,
+                            nr_levels=min(10, hierarchy_levels),
                         )
                     else:
                         figure = topic_model.visualize_documents(
@@ -705,6 +857,8 @@ def create_app(
             "max_words_in_topic",
             "top_n_words",
             "diversity",
+            "use_seed_topics",
+            "seed_topics",
         }
         if unknown_fields:
             return jsonify(
@@ -757,6 +911,33 @@ def create_app(
             return jsonify(
                 {"error": "diversity must be a number between 0 and 1."}
             ), 400
+        use_seed_topics = payload.get("use_seed_topics")
+        seed_topics = payload.get("seed_topics")
+        if use_seed_topics is not None and type(use_seed_topics) is not bool:
+            return jsonify({"error": "use_seed_topics must be a boolean."}), 400
+        if seed_topics is not None:
+            if (
+                not isinstance(seed_topics, list)
+                or any(
+                    not isinstance(topic, str)
+                    or not topic.strip()
+                    or len(topic.strip()) > 100
+                    for topic in seed_topics
+                )
+                or len(seed_topics) > 100
+            ):
+                return jsonify(
+                    {
+                        "error": (
+                            "seed_topics must be a list of at most 100 "
+                            "non-empty strings of at most 100 characters."
+                        )
+                    }
+                ), 400
+            seed_topics = [topic.strip() for topic in seed_topics]
+        if use_seed_topics is True and seed_topics is None:
+            seed_topics = list(DEFAULT_SEED_TOPICS)
+        seed_words = seed_topics if use_seed_topics else None
         vectorizer_ngram_range = (1, max_words_in_topic)
         source_config = {
             "ollama": {
@@ -768,8 +949,8 @@ def create_app(
             "wikipedia": {
                 "document_id_field": "wiki_text_document_id",
                 "document_source": "wikipedia-text",
-                "label": "Wikipedia text",
-                "plural_label": "Wikipedia texts",
+                "label": "(Wikipedia) text",
+                "plural_label": "(Wikipedia) texts",
             },
         }[topic_source]
         source_label = source_config["label"]
@@ -916,6 +1097,11 @@ def create_app(
                 ngram_range=vectorizer_ngram_range,
                 top_n_words=top_n_words,
                 diversity=diversity,
+                **(
+                    {"seed_words": seed_words}
+                    if use_seed_topics is not None
+                    else {}
+                ),
             )
         except ImportError as error:
             return jsonify(
@@ -1115,7 +1301,9 @@ def _generate_bertopic_concepts(
     ngram_range: tuple[int, int] = (1, 5),
     top_n_words: int = 15,
     diversity: float = 1.0,
+    seed_words: list[str] | None = None,
 ) -> list[dict[str, Any]]:
+    import inspect
     import numpy as np
     from bertopic import BERTopic
     from bertopic.representation import MaximalMarginalRelevance
@@ -1195,6 +1383,18 @@ def _generate_bertopic_concepts(
             self.probabilities_ = self.model.predict_proba(values)
             return self
 
+    seed_options: dict[str, Any] = {}
+    if seed_words:
+        bertopic_parameters = inspect.signature(BERTopic.__init__).parameters
+        if "seed_words" in bertopic_parameters:
+            seed_options["seed_words"] = seed_words
+        elif "seed_topic_list" in bertopic_parameters:
+            seed_options["seed_topic_list"] = [[word] for word in seed_words]
+        else:
+            raise RuntimeError(
+                "The installed BERTopic version does not support seed words."
+            )
+
     topic_model = BERTopic(
         embedding_model=_sentence_transformer_backend(embedding_model_name),
         umap_model=dimensionality,
@@ -1206,6 +1406,7 @@ def _generate_bertopic_concepts(
         ),
         top_n_words=top_n_words,
         representation_model=MaximalMarginalRelevance(diversity=diversity),
+        **seed_options,
         calculate_probabilities=True,
         verbose=False,
     )
@@ -1407,6 +1608,41 @@ def _load_bertopic_model(model_path: Path) -> Any:
             embedding_model=_load_topic_embedding_model(vectorizer_path),
         )
     return BERTopic.load(str(model_path))
+
+
+def _normalize_hierarchical_topics(
+    hierarchical_topics: Any,
+    topic_ids: Iterable[int],
+) -> Any:
+    """Work around BERTopic versions omitting the highest parent label."""
+    if not hasattr(hierarchical_topics, "columns") or hierarchical_topics.empty:
+        return hierarchical_topics
+    if "Parent_ID" not in hierarchical_topics.columns:
+        return hierarchical_topics
+
+    import pandas as pd
+
+    parent_ids = pd.to_numeric(
+        hierarchical_topics["Parent_ID"], errors="coerce"
+    ).dropna()
+    if parent_ids.empty:
+        return hierarchical_topics
+
+    max_parent_id = int(parent_ids.max())
+    row = {column: None for column in hierarchical_topics.columns}
+    parent_id = hierarchical_topics["Parent_ID"].iloc[0]
+    row["Parent_ID"] = (
+        str(max_parent_id + 1)
+        if isinstance(parent_id, str)
+        else max_parent_id + 1
+    )
+    row["Parent_Name"] = "All topics"
+    row["Topics"] = [topic_id for topic_id in topic_ids if topic_id >= 0]
+    row["Distance"] = None
+    return pd.concat(
+        [hierarchical_topics, pd.DataFrame([row])],
+        ignore_index=True,
+    )
 
 
 def _normalize_topic_embeddings(topic_model: Any) -> None:
@@ -2153,6 +2389,7 @@ def _military_contributions_prompt(
     wikipedia_text: str,
     word_count: int = DEFAULT_RESPONSE_WORD_COUNT,
     prompt: str = DEFAULT_OLLAMA_PROMPT,
+    source_label: str = "Wikipedia article",
 ) -> str:
     return (
         f"{prompt.strip()}\n\n"
@@ -2162,11 +2399,40 @@ def _military_contributions_prompt(
         "him only as 'he' or 'his'. Do not include named entities: omit names "
         "of people, places, organizations, battles, and countries, and omit "
         "years and specific dates. Describe strategic ideas in general terms. "
-        "Make use of the provided Wikipedia article and your foundational "
+        f"Make use of the provided {source_label} and your foundational "
         "knowledge on this thinker.\n\n"
-        "Wikipedia article text:\n"
+        f"{source_label} text:\n"
         f"{wikipedia_text}\n\n"
     )
+
+
+def _manual_thinker_name(
+    name: str,
+    birth_year: str | int | None,
+    death_year: str | int | None,
+    active_start_year: str | int | None,
+    active_end_year: str | int | None,
+) -> str:
+    birth = str(birth_year).strip() if birth_year not in (None, "") else ""
+    death = str(death_year).strip() if death_year not in (None, "") else ""
+    active_start = (
+        str(active_start_year).strip()
+        if active_start_year not in (None, "")
+        else ""
+    )
+    active_end = (
+        str(active_end_year).strip()
+        if active_end_year not in (None, "")
+        else ""
+    )
+    years = "-".join(part for part in (birth, death) if part)
+    active = (
+        f"(active {active_start}-{active_end})"
+        if active_start and active_end
+        else ""
+    )
+    suffixes = [f"({years})" if years else "", active]
+    return f"{name.strip()} {' '.join(suffix for suffix in suffixes if suffix)}".strip()
 
 
 def _document_view_data(
@@ -2178,7 +2444,9 @@ def _document_view_data(
         "military-strategy": "Ollama analysis",
         "dbpedia": "DBpedia profile",
     }
-    source_label = source_labels.get(source, "Source document")
+    source_label = document.get("document_label") or source_labels.get(
+        source, "Source document"
+    )
     source_url = document.get("url", "")
     prompt = None
     if source == "military-strategy":
@@ -2426,6 +2694,7 @@ def _store_document(
     content: bytes,
     content_type: str,
     prompt: str | None = None,
+    document_label: str | None = None,
 ) -> str:
     document = {
         "document_key": document_key,
@@ -2436,6 +2705,8 @@ def _store_document(
     }
     if prompt is not None:
         document["prompt"] = prompt
+    if document_label is not None:
+        document["document_label"] = document_label
     result = collection.insert_one(document)
     return str(result.inserted_id)
 
@@ -2602,12 +2873,24 @@ def _register_entity_routes(
             if isinstance(raw_payload, dict)
             else raw_payload
         )
-        # Remove control keys not part of the thinker schema before validation.
+        # Remove processing controls and manual-source fields before validation.
+        manual_fields = {
+            "text",
+            "birth_year",
+            "death_year",
+            "active_start_year",
+            "active_end_year",
+        }
         if isinstance(thinker_payload, dict):
             # work on a shallow copy so we don't mutate the original raw_payload
             thinker_payload = dict(thinker_payload)
             thinker_payload.pop("prompt", None)
             thinker_payload.pop("word_count", None)
+            manual_values = {
+                field: thinker_payload.pop(field, None) for field in manual_fields
+            }
+        else:
+            manual_values = {field: None for field in manual_fields}
         payload, error = _validate_payload(
             entity, thinker_payload, partial=True
         )
@@ -2615,12 +2898,53 @@ def _register_entity_routes(
             return jsonify({"error": error}), 400
         assert payload is not None
         wikipedia_url = payload.get("biography")
-        if not wikipedia_url:
-            return jsonify({"error": "The Wikipedia URL is required."}), 400
-        try:
-            _validate_remote_url(wikipedia_url, WIKIPEDIA_HOSTS)
-        except ValueError as url_error:
-            return jsonify({"error": str(url_error)}), 400
+        is_manual = not wikipedia_url
+        if is_manual:
+            manual_name = payload.get("name")
+            manual_text = manual_values["text"]
+            if not manual_name:
+                return jsonify({"error": "The name is required when no Wikipedia URL is provided."}), 400
+            if item_id is not None and not manual_text:
+                with _database(app.config["DATABASE"]) as connection:
+                    existing_manual = connection.execute(
+                        'SELECT wiki_text_document_id FROM "thinkers" WHERE id = ?',
+                        (item_id,),
+                    ).fetchone()
+                if existing_manual and existing_manual["wiki_text_document_id"]:
+                    try:
+                        existing_document = app.config["MONGO_DOCUMENTS"].find_one(
+                            {"_id": ObjectId(existing_manual["wiki_text_document_id"])}
+                        )
+                    except (InvalidId, PyMongoError) as error:
+                        return jsonify({"error": f"Could not retrieve saved Text: {error}"}), 503
+                    if existing_document is not None:
+                        manual_text = existing_document["content"].decode("utf-8")
+            if not isinstance(manual_text, str) or not manual_text.strip():
+                return jsonify({"error": "Text is required when no Wikipedia URL is provided."}), 400
+            for field, value in manual_values.items():
+                if field == "text" or value in (None, ""):
+                    continue
+                if not isinstance(value, (str, int)) or isinstance(value, bool):
+                    return jsonify({"error": f"{field} must be a year."}), 400
+                if not re.fullmatch(r"-?\d{1,4}", str(value).strip()):
+                    return jsonify({"error": f"{field} must be a year."}), 400
+            name = _manual_thinker_name(
+                manual_name,
+                manual_values["birth_year"],
+                manual_values["death_year"],
+                manual_values["active_start_year"],
+                manual_values["active_end_year"],
+            )
+            wikipedia_text = manual_text.strip()
+            final_wikipedia_url = ""
+            wiki_content = None
+            dbpedia_content = None
+            final_dbpedia_url = ""
+        else:
+            try:
+                _validate_remote_url(wikipedia_url, WIKIPEDIA_HOSTS)
+            except ValueError as url_error:
+                return jsonify({"error": str(url_error)}), 400
 
         if item_id is not None:
             with _database(app.config["DATABASE"]) as connection:
@@ -2632,49 +2956,51 @@ def _register_entity_routes(
         else:
             existing = None
 
-        try:
-            wiki_content, final_wikipedia_url = _download_wikipedia_page(wikipedia_url)
-        except ValueError as download_error:
-            return jsonify({"error": str(download_error)}), 400
-        except (HTTPError, URLError, TimeoutError, OSError) as download_error:
-            return jsonify(
-                {"error": f"Could not download the Wikipedia page: {download_error}"}
-            ), 502
+        if not is_manual:
+            try:
+                wiki_content, final_wikipedia_url = _download_wikipedia_page(wikipedia_url)
+            except ValueError as download_error:
+                return jsonify({"error": str(download_error)}), 400
+            except (HTTPError, URLError, TimeoutError, OSError) as download_error:
+                return jsonify(
+                    {"error": f"Could not download the Wikipedia page: {download_error}"}
+                ), 502
 
-        try:
-            wikipedia_text = _download_wikipedia_text(final_wikipedia_url)
-        except ValueError as download_error:
-            return jsonify(
-                {"error": f"Could not retrieve Wikipedia plain text: {download_error}"}
-            ), 502
-        except (HTTPError, URLError, TimeoutError, OSError) as download_error:
-            return jsonify(
-                {"error": f"Could not retrieve Wikipedia plain text: {download_error}"}
-            ), 502
+            try:
+                wikipedia_text = _download_wikipedia_text(final_wikipedia_url)
+            except ValueError as download_error:
+                return jsonify(
+                    {"error": f"Could not retrieve Wikipedia plain text: {download_error}"}
+                ), 502
+            except (HTTPError, URLError, TimeoutError, OSError) as download_error:
+                return jsonify(
+                    {"error": f"Could not retrieve Wikipedia plain text: {download_error}"}
+                ), 502
 
-        try:
-            dbpedia_url = _dbpedia_data_url(final_wikipedia_url)
-            dbpedia_content, final_dbpedia_url = _download_dbpedia_data(dbpedia_url)
-        except ValueError as download_error:
-            return jsonify({"error": str(download_error)}), 400
-        except (HTTPError, URLError, TimeoutError, OSError) as download_error:
-            return jsonify(
-                {"error": f"Could not download DBpedia data: {download_error}"}
-            ), 502
+            try:
+                dbpedia_url = _dbpedia_data_url(final_wikipedia_url)
+                dbpedia_content, final_dbpedia_url = _download_dbpedia_data(dbpedia_url)
+            except ValueError as download_error:
+                return jsonify({"error": str(download_error)}), 400
+            except (HTTPError, URLError, TimeoutError, OSError) as download_error:
+                return jsonify(
+                    {"error": f"Could not download DBpedia data: {download_error}"}
+                ), 502
 
-        try:
-            name = _thinker_name_from_dbpedia(
-                dbpedia_content, final_wikipedia_url, wiki_content
-            )
-        except ValueError as parse_error:
-            return jsonify(
-                {"error": f"Could not identify the thinker in DBpedia: {parse_error}"}
-            ), 502
+            try:
+                name = _thinker_name_from_dbpedia(
+                    dbpedia_content, final_wikipedia_url, wiki_content
+                )
+            except ValueError as parse_error:
+                return jsonify(
+                    {"error": f"Could not identify the thinker in DBpedia: {parse_error}"}
+                ), 502
 
         military_prompt = _military_contributions_prompt(
             wikipedia_text,
             word_count,
             analysis_prompt,
+            "Text" if is_manual else "Wikipedia article",
         )
         try:
             military_contributions = _extract_military_contributions(
@@ -2691,15 +3017,18 @@ def _register_entity_routes(
                 {"error": f"The language model returned an invalid response: {model_error}"}
             ), 502
 
-        with _database(app.config["DATABASE"]) as connection:
-            matching_thinkers = [
-                row
-                for row in connection.execute(
-                    'SELECT * FROM "thinkers" WHERE biography IS NOT NULL ORDER BY id'
-                ).fetchall()
-                if _wikipedia_article_key(row["biography"])
-                == _wikipedia_article_key(final_wikipedia_url)
-            ]
+        if is_manual:
+            matching_thinkers = []
+        else:
+            with _database(app.config["DATABASE"]) as connection:
+                matching_thinkers = [
+                    row
+                    for row in connection.execute(
+                        'SELECT * FROM "thinkers" WHERE biography IS NOT NULL ORDER BY id'
+                    ).fetchall()
+                    if _wikipedia_article_key(row["biography"])
+                    == _wikipedia_article_key(final_wikipedia_url)
+                ]
 
         if item_id is None and matching_thinkers:
             existing = matching_thinkers[0]
@@ -2717,15 +3046,17 @@ def _register_entity_routes(
         inserted_ids: list[str] = []
         documents = app.config["MONGO_DOCUMENTS"]
         try:
-            wiki_document_id = _store_document(
-                documents,
-                document_key,
-                "wikipedia",
-                final_wikipedia_url,
-                wiki_content,
-                "text/html",
-            )
-            inserted_ids.append(wiki_document_id)
+            wiki_document_id = None
+            if not is_manual:
+                wiki_document_id = _store_document(
+                    documents,
+                    document_key,
+                    "wikipedia",
+                    final_wikipedia_url,
+                    wiki_content,
+                    "text/html",
+                )
+                inserted_ids.append(wiki_document_id)
             wiki_text_document_id = _store_document(
                 documents,
                 document_key,
@@ -2733,17 +3064,20 @@ def _register_entity_routes(
                 final_wikipedia_url,
                 wikipedia_text.encode("utf-8"),
                 "text/plain; charset=utf-8",
+                document_label="Text" if is_manual else None,
             )
             inserted_ids.append(wiki_text_document_id)
-            dbpedia_document_id = _store_document(
-                documents,
-                document_key,
-                "dbpedia",
-                final_dbpedia_url,
-                dbpedia_content,
-                "application/json",
-            )
-            inserted_ids.append(dbpedia_document_id)
+            dbpedia_document_id = None
+            if not is_manual:
+                dbpedia_document_id = _store_document(
+                    documents,
+                    document_key,
+                    "dbpedia",
+                    final_dbpedia_url,
+                    dbpedia_content,
+                    "application/json",
+                )
+                inserted_ids.append(dbpedia_document_id)
             military_thinking_document_id = _store_document(
                 documents,
                 document_key,

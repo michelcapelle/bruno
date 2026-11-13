@@ -117,7 +117,7 @@ body {
 .document-section h2 { margin-bottom: 20px; font-family: Georgia, serif; font-size: 23px; font-weight: 500; }
 .document-facts dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px 26px; margin: 0; }
 .about-panel ol { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0 0; padding: 0; list-style: none; counter-reset: about-step; }
-.about-panel li { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 10px; row-gap: 10px; padding: 16px 18px; border: 1px solid var(--line); background: var(--paper); line-height: 1.6; counter-increment: about-step; }
+.about-panel li { display: grid; grid-template-columns: auto 1fr; align-items: start; column-gap: 10px; row-gap: 10px; padding: 16px 18px; border: 1px solid var(--line); background: var(--paper); line-height: 1.6; counter-increment: about-step; }
 .about-panel li::before { content: counter(about-step); display: inline-grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; background: var(--green); color: #fff; font-size: 12px; font-weight: 700; }
 .about-panel li strong { font-family: Georgia, serif; font-size: 17px; font-weight: 500; }
 .about-panel li span { grid-column: 1 / -1; }
@@ -283,6 +283,13 @@ input:focus, textarea:focus, select:focus { outline: 2px solid #8aa691; outline-
 textarea { resize: vertical; line-height: 1.6; }
 input::placeholder, textarea::placeholder { color: #aaa99f; }
 .form-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+.seed-topics-toggle { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+.seed-topics-toggle input { width: auto; }
+.seed-topic-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.seed-topic-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--line); background: #fff; color: var(--muted); font-size: 12px; }
+.seed-topic-remove { padding: 0; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; }
+.seed-topic-add { display: flex; gap: 8px; margin-top: 10px; }
+.seed-topic-add input { flex: 1; }
 .button { padding: 11px 13px; border: 0; border-radius: 2px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 .button-primary { background: var(--green); color: white; }
 .button-primary:hover { background: var(--green-dark); }

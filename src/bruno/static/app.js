@@ -1,3 +1,9 @@
+const apiBaseUrl = String(window.BRUNO_API_BASE_URL || "").replace(/\/+$/, "");
+
+function backendUrl(path) {
+  return `${apiBaseUrl}${path}`;
+}
+
 const collections = {
   concepts: {
     label: "Topic",
@@ -15,11 +21,29 @@ const collections = {
   },
 };
 
+const defaultSeedTopics = [
+  "western", "eastern", "societal", "political", "ideological", "indirect",
+  "decisive", "air", "maritime", "cyber", "attrition", "maneuver",
+  "technological", "nuclear", "innovative", "human factor",
+  "decision-making", "psychological", "sociological", "emotional",
+  "irrational", "system", "disruption", "deterrence", "paralysis",
+  "hybrid", "grey zone", "insurgency",
+];
+
 const form = document.querySelector("#entry-form");
 const nameInput = document.querySelector("#entry-name");
 const nameLabel = document.querySelector("#name-label");
 const detailsInput = document.querySelector("#entry-details");
 const wikipediaInput = document.querySelector("#entry-wikipedia");
+const thinkerSourceSelect = document.querySelector("#thinker-source");
+const thinkerSourceLabel = document.querySelector("#thinker-source-label");
+const thinkerYears = document.querySelector("#thinker-years");
+const birthYearInput = document.querySelector("#birth-year");
+const deathYearInput = document.querySelector("#death-year");
+const activeStartYearInput = document.querySelector("#active-start-year");
+const activeEndYearInput = document.querySelector("#active-end-year");
+const textInput = document.querySelector("#entry-text");
+const textLabel = document.querySelector("#text-label");
 const heading = document.querySelector("#form-heading");
 const formEyebrow = document.querySelector("#form-eyebrow");
 const responseWordCountLabel = document.querySelector("#response-word-count-label");
@@ -39,6 +63,10 @@ const topicMinDfInput = document.querySelector("#topic-min-df");
 const topicMaxWordsInput = document.querySelector("#topic-max-words");
 const topicTopNWordsInput = document.querySelector("#topic-top-n-words");
 const topicDiversityInput = document.querySelector("#topic-diversity");
+const seedTopicsEnabledInput = document.querySelector("#seed-topics-enabled");
+const seedTopicList = document.querySelector("#seed-topic-list");
+const seedTopicInput = document.querySelector("#seed-topic-input");
+const seedTopicAddButton = document.querySelector("#seed-topic-add-button");
 const detailsLabel = document.querySelector("#details-label");
 const saveButton = document.querySelector("#save-button");
 const cancelButton = document.querySelector("#cancel-button");
@@ -56,6 +84,10 @@ const topicInformation = document.querySelector("#topic-information");
 const thinkerInformation = document.querySelector("#thinker-information");
 const apiStatus = document.querySelector("#api-status");
 const languageModelStatus = document.querySelector("#language-model-status");
+const exportPanel = document.querySelector("#export-panel");
+const exportButton = document.querySelector("#export-button");
+const exportStatus = document.querySelector("#export-status");
+const exportError = document.querySelector("#export-error");
 const workspace = document.querySelector(".workspace");
 const visualizationsPanel = document.querySelector("#visualizations");
 const topicsVisualization = document.querySelector("#topics-visualization");
@@ -79,6 +111,57 @@ let distributionRequestId = 0;
 let distributionLoadPromise = null;
 let distributionsLoaded = false;
 let topicDistributions = [];
+let offlineMode = false;
+
+function setOfflineState(offline) {
+  offlineMode = offline;
+  for (const control of document.querySelectorAll(
+    ".workspace form button, .workspace form input, .workspace form select, " +
+    ".workspace form textarea, #export-button, .visualization-option, " +
+    "#distribution-retry",
+  )) {
+    control.disabled = offline;
+  }
+}
+let seedTopics = [...defaultSeedTopics];
+
+function renderSeedTopics() {
+  seedTopicList.replaceChildren();
+  for (const topic of seedTopics) {
+    const chip = document.createElement("span");
+    chip.className = "seed-topic-chip";
+    chip.textContent = topic;
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "seed-topic-remove";
+    removeButton.setAttribute("aria-label", `Remove seed topic ${topic}`);
+    removeButton.textContent = "×";
+    removeButton.addEventListener("click", () => {
+      seedTopics = seedTopics.filter((item) => item !== topic);
+      renderSeedTopics();
+    });
+    chip.append(removeButton);
+    seedTopicList.append(chip);
+  }
+}
+
+function addSeedTopic() {
+  const topic = seedTopicInput.value.trim();
+  if (topic && !seedTopics.includes(topic)) {
+    seedTopics.push(topic);
+    seedTopicInput.value = "";
+    renderSeedTopics();
+  }
+}
+
+seedTopicAddButton.addEventListener("click", addSeedTopic);
+seedTopicInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addSeedTopic();
+  }
+});
+renderSeedTopics();
 
 const visualizationCountText = String(visualizationOptions.length);
 visualizationCount.textContent = visualizationCountText;
@@ -144,7 +227,7 @@ function _createAssignmentsList(thinkers) {
     const displayName = thinkerTimeline?.(thinker.name)?.name ?? thinker.name;
     if (thinker.document_id) {
       const link = document.createElement("a");
-      link.href = `/documents/${encodeURIComponent(thinker.document_id)}`;
+      link.href = backendUrl(`/documents/${encodeURIComponent(thinker.document_id)}`);
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.textContent = displayName;
@@ -233,7 +316,7 @@ async function loadTopicDistributions() {
   distributionLoadPromise = (async () => {
     try {
       const response = await requestJson(
-        "/api/visualizations/approximate-distributions",
+        backendUrl("/api/visualizations/approximate-distributions"),
         { cache: "no-store" },
       );
       if (requestId !== distributionRequestId) return;
@@ -318,7 +401,7 @@ async function loadVisualization() {
   topicsVisualization.srcdoc = "";
   topicsVisualization.style.height = "0px";
   try {
-    const response = await fetch(`/visualizations/${visualization}`, {
+    const response = await fetch(backendUrl(`/visualizations/${visualization}`), {
       cache: "no-store",
     });
     if (!response.ok) {
@@ -351,11 +434,34 @@ function setConnectionStatus(element, connected, label) {
   element.classList.toggle("unavailable", !connected);
 }
 
+function updateThinkerSourceFields() {
+  const manual = activeCollection === "thinkers" && thinkerSourceSelect.value === "text";
+  thinkerSourceLabel.hidden = activeCollection !== "thinkers";
+  thinkerSourceSelect.hidden = activeCollection !== "thinkers";
+  nameLabel.hidden = !manual;
+  nameInput.hidden = !manual;
+  nameInput.required = manual;
+  thinkerYears.hidden = !manual;
+  detailsLabel.hidden = activeCollection !== "thinkers" && !editingId;
+  wikipediaInput.hidden = activeCollection !== "thinkers" || manual;
+  wikipediaSuggestions.hidden = activeCollection !== "thinkers" || manual;
+  textLabel.hidden = !manual;
+  textInput.hidden = !manual;
+  textInput.required = manual;
+  if (manual) {
+    detailsLabel.textContent = "Wikipedia source (optional)";
+  } else {
+    detailsLabel.textContent = "Wikipedia source";
+  }
+}
+
 function setEditing(entry = null) {
   editingId = entry ? entry.id : null;
   const config = collections[activeCollection];
   // Guard element access in case the DOM is not exactly as expected (prevents TypeError)
-  if (wikipediaSuggestions) wikipediaSuggestions.hidden = activeCollection !== "thinkers";
+  if (thinkerSourceSelect) {
+    thinkerSourceSelect.value = entry?.biography ? "wikipedia" : "wikipedia";
+  }
   if (responseWordCountLabel) responseWordCountLabel.hidden = activeCollection !== "thinkers" || Boolean(entry);
   if (responseWordCountInput) responseWordCountInput.hidden = activeCollection !== "thinkers" || Boolean(entry);
   if (responseWordCountHelp) responseWordCountHelp.hidden = activeCollection !== "thinkers" || Boolean(entry);
@@ -374,6 +480,9 @@ function setEditing(entry = null) {
   if (topicMaxWordsInput) topicMaxWordsInput.disabled = topicOptionsDisabled;
   if (topicTopNWordsInput) topicTopNWordsInput.disabled = topicOptionsDisabled;
   if (topicDiversityInput) topicDiversityInput.disabled = topicOptionsDisabled;
+  if (seedTopicsEnabledInput) seedTopicsEnabledInput.disabled = topicOptionsDisabled;
+  if (seedTopicInput) seedTopicInput.disabled = topicOptionsDisabled || !seedTopicsEnabledInput.checked;
+  if (seedTopicAddButton) seedTopicAddButton.disabled = topicOptionsDisabled || !seedTopicsEnabledInput.checked;
   if (topicSearchBox) topicSearchBox.hidden = activeCollection !== "concepts" || Boolean(entry) || conceptCount < 1;
   if (topicInformation) topicInformation.hidden = activeCollection !== "concepts" || Boolean(entry);
   if (thinkerInformation) thinkerInformation.hidden = activeCollection !== "thinkers" || Boolean(entry);
@@ -401,10 +510,13 @@ function setEditing(entry = null) {
   if (detailsLabel) detailsLabel.htmlFor = activeCollection === "thinkers" ? "entry-wikipedia" : "entry-details";
   if (detailsInput) detailsInput.hidden = activeCollection !== "concepts" || !entry;
   if (detailsInput) detailsInput.placeholder = config.placeholder;
-  if (wikipediaInput) wikipediaInput.hidden = activeCollection !== "thinkers";
   if (nameInput) nameInput.value = entry?.name ?? "";
   if (detailsInput) detailsInput.value = "";
   if (wikipediaInput) wikipediaInput.value = "";
+  if (textInput) textInput.value = "";
+  for (const input of [birthYearInput, deathYearInput, activeStartYearInput, activeEndYearInput]) {
+    input.value = "";
+  }
   if (responseWordCountInput) responseWordCountInput.value = "500";
   if (ollamaPromptInput) {
     // Only set the default prompt when the field is currently empty or when editing an entry.
@@ -414,8 +526,12 @@ function setEditing(entry = null) {
     }
   }
   if (topicCountInput) topicCountInput.value = "";
+  if (seedTopicsEnabledInput) seedTopicsEnabledInput.checked = true;
+  seedTopics = [...defaultSeedTopics];
+  renderSeedTopics();
   const detailInput = activeCollection === "thinkers" ? wikipediaInput : detailsInput;
   if (detailInput) detailInput.value = entry?.[config.detailField] ?? "";
+  updateThinkerSourceFields();
   showError(formError);
 }
 
@@ -499,15 +615,16 @@ function makeEntryCard(entry, position) {
       if (entry.wiki_text_document_id) {
         const articleText = document.createElement("a");
         articleText.href =
-          `/documents/${encodeURIComponent(entry.wiki_text_document_id)}`;
+          backendUrl(`/documents/${encodeURIComponent(entry.wiki_text_document_id)}`);
         articleText.target = "_blank";
         articleText.rel = "noopener noreferrer";
         articleText.textContent = "Wikipedia";
+        if (!entry.biography) articleText.textContent = "Text";
         links.push(articleText);
       }
       if (entry.dbpedia_document_id) {
         const dbpediaPage = document.createElement("a");
-        dbpediaPage.href = `/documents/${encodeURIComponent(entry.dbpedia_document_id)}`;
+        dbpediaPage.href = backendUrl(`/documents/${encodeURIComponent(entry.dbpedia_document_id)}`);
         dbpediaPage.target = "_blank";
         dbpediaPage.rel = "noopener noreferrer";
         dbpediaPage.textContent = "DBpedia";
@@ -516,7 +633,7 @@ function makeEntryCard(entry, position) {
       if (entry.military_thinking_document_id) {
         const militaryThinking = document.createElement("a");
         militaryThinking.href =
-          `/documents/${encodeURIComponent(entry.military_thinking_document_id)}`;
+          backendUrl(`/documents/${encodeURIComponent(entry.military_thinking_document_id)}`);
         militaryThinking.target = "_blank";
         militaryThinking.rel = "noopener noreferrer";
         militaryThinking.textContent = "Ollama";
@@ -568,7 +685,7 @@ function makeEntryCard(entry, position) {
             : thinker.military_thinking_document_id;
         if (sourceDocumentId) {
           const link = document.createElement("a");
-          link.href = `/documents/${encodeURIComponent(sourceDocumentId)}`;
+          link.href = backendUrl(`/documents/${encodeURIComponent(sourceDocumentId)}`);
           link.target = "_blank";
           link.rel = "noopener noreferrer";
           link.textContent = thinkerTimeline(thinker.name)?.name ?? thinker.name;
@@ -625,12 +742,20 @@ function makeEntryCard(entry, position) {
 }
 
 async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
+  const response = await fetch(backendUrl(url), options);
   if (!response.ok) {
     const result = await response.json().catch(() => ({}));
     throw new Error(result.error || `Request failed (${response.status}).`);
   }
   return response.status === 204 ? null : response.json();
+}
+
+async function loadCachedJson(filename) {
+  const response = await fetch(backendUrl(`/data/${filename}`), { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Cached data ${filename} is unavailable.`);
+  }
+  return response.json();
 }
 
 async function loadCollectionCounts() {
@@ -642,9 +767,22 @@ async function loadCollectionCounts() {
     document.querySelector("#thinker-count").textContent = String(thinkers.length);
     document.querySelector("#concept-count").textContent = String(concepts.length);
     setConnectionStatus(apiStatus, true, "API connected");
+    setOfflineState(false);
   } catch (error) {
     setConnectionStatus(apiStatus, false, "API unavailable");
-    showError(listError, error.message);
+    try {
+      const [thinkers, concepts] = await Promise.all([
+        loadCachedJson("thinkers.json"),
+        loadCachedJson("concepts.json"),
+      ]);
+      document.querySelector("#thinker-count").textContent = String(thinkers.length);
+      document.querySelector("#concept-count").textContent = String(concepts.length);
+      setOfflineState(true);
+      showError(listError, "API unavailable. Showing exported data.");
+    } catch (cacheError) {
+      setOfflineState(true);
+      showError(listError, `${error.message} ${cacheError.message}`);
+    }
   }
 }
 
@@ -725,7 +863,27 @@ async function loadEntries() {
     applyThinkerSearch();
   } catch (error) {
     setConnectionStatus(apiStatus, false, "API unavailable");
-    showError(listError, error.message);
+    try {
+      const [entries, otherEntries] = await Promise.all([
+        loadCachedJson(`${activeCollection}.json`),
+        loadCachedJson(`${otherCollection}.json`),
+      ]);
+      setOfflineState(true);
+      conceptCount = activeCollection === "concepts"
+        ? entries.length
+        : otherEntries.length;
+      document.querySelector("#entry-total").textContent =
+        `${entries.length} ${entries.length === 1 ? (activeCollection === "concepts" ? "topic" : "entry") : (activeCollection === "concepts" ? "topics" : "entries")}`;
+      list.replaceChildren();
+      for (const [index, entry] of entries.entries()) {
+        list.append(makeEntryCard(entry, activeCollection === "concepts" ? index : index + 1));
+      }
+      applyThinkerSearch();
+      showError(listError, "API unavailable. Showing exported data.");
+    } catch (cacheError) {
+      setOfflineState(true);
+      showError(listError, `${error.message} ${cacheError.message}`);
+    }
   }
 }
 
@@ -781,11 +939,6 @@ async function removeEntry(entry) {
 }
 
 async function reprocessThinker(entry, button, article) {
-  if (!entry.biography) {
-    showError(listError, `Cannot reprocess "${entry.name}": Wikipedia URL is missing.`);
-    return;
-  }
-
   const originalLabel = button.textContent;
   const tabs = [...document.querySelectorAll(".tab")];
   button.disabled = true;
@@ -800,7 +953,7 @@ async function reprocessThinker(entry, button, article) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        biography: entry.biography,
+        ...(entry.biography ? { biography: entry.biography } : { name: entry.name }),
         prompt: ollamaPromptInput.value,
         word_count: Number(responseWordCountInput.value),
       }),
@@ -823,10 +976,21 @@ form.addEventListener("submit", async (event) => {
   if (saveButton.disabled) return;
   const config = collections[activeCollection];
   const isGeneratingConcepts = activeCollection === "concepts" && !editingId;
+  const manualThinker =
+    activeCollection === "thinkers" && thinkerSourceSelect.value === "text";
   const detailInput = activeCollection === "thinkers" ? wikipediaInput : detailsInput;
-  const payload = isGeneratingConcepts ? {} : {
-    [config.detailField]: detailInput.value,
-  };
+  const payload = isGeneratingConcepts
+    ? {}
+    : manualThinker
+      ? {
+          name: nameInput.value,
+          text: textInput.value,
+          birth_year: birthYearInput.value,
+          death_year: deathYearInput.value,
+          active_start_year: activeStartYearInput.value,
+          active_end_year: activeEndYearInput.value,
+        }
+      : { [config.detailField]: detailInput.value };
   if (isGeneratingConcepts && topicCountInput.value !== "") {
     payload.topic_count = Number(topicCountInput.value);
   }
@@ -836,6 +1000,8 @@ form.addEventListener("submit", async (event) => {
     payload.max_words_in_topic = Number(topicMaxWordsInput.value);
     payload.top_n_words = Number(topicTopNWordsInput.value);
     payload.diversity = Number(topicDiversityInput.value);
+    payload.use_seed_topics = seedTopicsEnabledInput.checked;
+    payload.seed_topics = [...seedTopics];
   }
   if (activeCollection === "thinkers" && !editingId) {
   payload.word_count = Number(responseWordCountInput.value);
@@ -855,6 +1021,12 @@ form.addEventListener("submit", async (event) => {
     '<span class="processing-spinner" aria-hidden="true"></span>' +
     `${isProcessingThinker ? "Processing thinker…" : "Generating topics…"}`;
   wikipediaInput.disabled = true;
+  thinkerSourceSelect.disabled = true;
+  textInput.disabled = true;
+  birthYearInput.disabled = true;
+  deathYearInput.disabled = true;
+  activeStartYearInput.disabled = true;
+  activeEndYearInput.disabled = true;
   responseWordCountInput.disabled = true;
   ollamaPromptInput.disabled = true;
   topicSourceSelect.disabled = true;
@@ -865,6 +1037,9 @@ form.addEventListener("submit", async (event) => {
   topicMaxWordsInput.disabled = true;
   topicTopNWordsInput.disabled = true;
   topicDiversityInput.disabled = true;
+  seedTopicsEnabledInput.disabled = true;
+  seedTopicInput.disabled = true;
+  seedTopicAddButton.disabled = true;
   topicSearchButton.disabled = true;
   document.querySelectorAll(".tab").forEach((tab) => {
     tab.disabled = true;
@@ -880,7 +1055,7 @@ form.addEventListener("submit", async (event) => {
       isProcessingThinker
         ? "Downloading sources and analyzing with the language model. This can take a few minutes; keep this page open."
         : isGeneratingConcepts
-          ? `Analyzing all processed ${topicSourceSelect.value === "ollama" ? "Ollama analyses" : "Wikipedia texts"} with BERTopic. This can take a few minutes; keep this page open.`
+          ? `Analyzing all processed ${topicSourceSelect.value === "ollama" ? "Ollama analyses" : "(Wikipedia) text"} with BERTopic. This can take a few minutes; keep this page open.`
           : "Saving topic changes.",
     ),
   );
@@ -913,6 +1088,12 @@ form.addEventListener("submit", async (event) => {
     saveButton.disabled = false;
     saveButton.classList.remove("is-processing");
     wikipediaInput.disabled = false;
+    thinkerSourceSelect.disabled = false;
+    textInput.disabled = false;
+    birthYearInput.disabled = false;
+    deathYearInput.disabled = false;
+    activeStartYearInput.disabled = false;
+    activeEndYearInput.disabled = false;
     responseWordCountInput.disabled = false;
     ollamaPromptInput.disabled = false;
     nameInput.disabled = false;
@@ -924,15 +1105,29 @@ form.addEventListener("submit", async (event) => {
     topicMaxWordsInput.disabled = topicOptionsDisabled;
     topicTopNWordsInput.disabled = topicOptionsDisabled;
     topicDiversityInput.disabled = topicOptionsDisabled;
+    seedTopicsEnabledInput.disabled = topicOptionsDisabled;
+    seedTopicInput.disabled = topicOptionsDisabled || !seedTopicsEnabledInput.checked;
+    seedTopicAddButton.disabled = topicOptionsDisabled || !seedTopicsEnabledInput.checked;
     topicSearchButton.disabled = false;
     topicSourceSelect.disabled = false;
     document.querySelectorAll(".tab").forEach((tab) => {
       tab.disabled = false;
     });
+
     form.removeAttribute("aria-busy");
     formStatus.hidden = true;
     if (!succeeded) saveButton.innerHTML = originalButtonContent;
   }
+});
+
+thinkerSourceSelect.addEventListener("change", updateThinkerSourceFields);
+seedTopicsEnabledInput.addEventListener("change", () => {
+  const disabled =
+    activeCollection !== "concepts"
+    || Boolean(editingId)
+    || !seedTopicsEnabledInput.checked;
+  seedTopicInput.disabled = disabled;
+  seedTopicAddButton.disabled = disabled;
 });
 
 topicSearchForm.addEventListener("submit", async (event) => {
@@ -1019,12 +1214,14 @@ document.querySelectorAll(".tab").forEach((tab) => {
     const collection = tab.dataset.collection;
     const showVisualizations = collection === "visualizations";
     const showAbout = collection === "about";
+    const showExport = collection === "export";
 
     // Show/hide main workspace, visualizations panel, and about panel appropriately
-    workspace.hidden = showVisualizations || showAbout;
+    workspace.hidden = showVisualizations || showAbout || showExport;
     visualizationsPanel.hidden = !showVisualizations;
     const aboutPanel = document.querySelector("#about-panel");
     if (aboutPanel) aboutPanel.hidden = !showAbout;
+    if (exportPanel) exportPanel.hidden = !showExport;
 
     document.querySelectorAll(".tab").forEach((item) => {
       const selected = item === tab;
@@ -1042,6 +1239,7 @@ document.querySelectorAll(".tab").forEach((tab) => {
       loadCollectionCounts();
       return;
     }
+    if (showExport) return;
 
     // For Thinkers/Topics, set the active collection and refresh entries
     activeCollection = collection;
@@ -1068,3 +1266,19 @@ if (aboutTabButton) {
 
 checkLanguageModel();
 window.setInterval(checkLanguageModel, 30000);
+
+exportButton.addEventListener("click", async () => {
+  exportButton.disabled = true;
+  showError(exportError);
+  exportStatus.textContent = "Exporting page data…";
+  exportStatus.hidden = false;
+  try {
+    const result = await requestJson("/api/export", { method: "POST" });
+    exportStatus.textContent = `Exported ${result.files.length} JSON files to /data.`;
+  } catch (error) {
+    showError(exportError, error.message);
+    exportStatus.hidden = true;
+  } finally {
+    exportButton.disabled = offlineMode;
+  }
+});

@@ -6,6 +6,7 @@
     <meta name="description" content="Trace the topics and thinkers shaping military strategic thought.">
     <title>Bruno — Assemblies of Conceptual Thinking</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='config.js') }}" defer></script>
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
   </head>
   <body>
@@ -45,18 +46,31 @@
         <button class="tab" type="button" data-collection="thinkers" aria-selected="false">Thinkers <span id="thinker-count">0</span></button>
         <button class="tab" type="button" data-collection="concepts" aria-selected="false">Topics <span id="concept-count">0</span></button>
         <button class="tab" type="button" data-collection="visualizations" aria-selected="false">Visualizations <span id="visualization-count" aria-label="8 available visualizations">8</span></button>
+        <button class="tab" type="button" data-collection="export" aria-selected="false">Export</button>
       </nav>
 
       <section class="about-panel" id="about-panel" hidden>
         <section class="document-section">
           <h2>About Bruno</h2>
           <p>Bruno is an exploratory tool to trace how ideas and concepts (as topics) appear across influential military strategic thinkers. It combines processed Wikipedia texts, (Wikipedia) DBpedia metadata, and Ollama LLM prompt analyses to generate topics and approximate which thinkers are associated with them.</p>
+          <p><a href="https://github.com/michelcapelle/bruno" target="_blank" rel="noopener noreferrer">Bruno on GitHub</a> · <a href="/essay.pdf" target="_blank" rel="noopener noreferrer">Read the essay</a></p>
           <ol>
             <li><strong>Thinkers</strong><span>Add thinkers and their associated texts to generate Ollama LLM analyses on their contributions to military strategy.</span></li>
             <li><strong>Topics</strong><span>Generated topics using the BERTopic algorithm, their keywords and statistically assigned thinkers.</span></li>
             <li><strong>Visualizations</strong><span>Discover how topics and thinkers relate to each other.</span></li>
           </ol>
         </section>
+      </section>
+
+      <section class="about-panel export-panel" id="export-panel" hidden aria-labelledby="export-heading">
+          <section class="document-section">
+            <p class="eyebrow">DATA</p>
+            <h2 id="export-heading">Export</h2>
+            <p>Save the information as JSON files in the <code>/data</code> folder. The saved files are also used as a fallback when the API is unavailable.</p>
+            <button class="button button-primary" id="export-button" type="button">Export data <span aria-hidden="true">→</span></button>
+            <p class="form-status" id="export-status" role="status" aria-live="polite" hidden></p>
+            <p class="form-error" id="export-error" role="alert" hidden></p>
+          </section>
       </section>
 
       <div class="workspace">
@@ -68,7 +82,7 @@
               <label id="topic-source-label" for="topic-source" hidden>Text source</label>
               <select id="topic-source" hidden>
                 <option value="ollama">Ollama analysis</option>
-                <option value="wikipedia" selected>Wikipedia text</option>
+                <option value="wikipedia" selected>(Wikipedia) text</option>
               </select>
               <label id="topic-count-label" for="topic-count" hidden>Number of topics (optional)</label>
               <input id="topic-count" type="number" min="1" step="1" placeholder="Automatic" aria-describedby="topic-count-help" hidden>
@@ -82,13 +96,39 @@
                 <input id="topic-top-n-words" type="number" min="1" step="1" value="15" required>
                 <label for="topic-diversity">Diversity</label>
                 <input id="topic-diversity" type="number" min="0" max="1" step="0.1" value="0.2" required>
+                <label class="seed-topics-toggle">
+                  <input id="seed-topics-enabled" type="checkbox" checked>
+                  Use seed words
+                </label>
+                <div id="seed-topic-list" class="seed-topic-list" aria-label="Seed topics"></div>
+                <div class="seed-topic-add">
+                  <input id="seed-topic-input" type="text" maxlength="100" placeholder="Add a seed topic">
+                  <button class="button button-quiet" id="seed-topic-add-button" type="button">Add</button>
+                </div>
               </div>
+              <label id="thinker-source-label" for="thinker-source" hidden>Thinker source</label>
+              <select id="thinker-source" hidden>
+                <option value="wikipedia" selected>Wikipedia page</option>
+                <option value="text">Text without Wikipedia page</option>
+              </select>
               <label id="name-label" for="entry-name" hidden>Name</label>
-              <input id="entry-name" name="name" type="text" maxlength="200" placeholder="e.g. maneuver warfare" hidden>
+              <input id="entry-name" name="name" type="text" maxlength="200" placeholder="e.g. Carl von Clausewitz" hidden>
+              <div id="thinker-years" hidden>
+                <label for="birth-year">Birth year (optional)</label>
+                <input id="birth-year" type="number" min="-9999" max="9999" step="1" placeholder="e.g. 1780">
+                <label for="death-year">Death year (optional)</label>
+                <input id="death-year" type="number" min="-9999" max="9999" step="1" placeholder="e.g. 1831">
+                <label for="active-start-year">Active from (optional)</label>
+                <input id="active-start-year" type="number" min="-9999" max="9999" step="1" placeholder="e.g. 1800">
+                <label for="active-end-year">Active until (optional)</label>
+                <input id="active-end-year" type="number" min="-9999" max="9999" step="1" placeholder="e.g. 1831">
+              </div>
               <label id="details-label" for="entry-wikipedia">Wikipedia source</label>
               <textarea id="entry-details" name="details" rows="6" maxlength="10000" placeholder="What does this idea mean?" hidden></textarea>
               <input id="entry-wikipedia" type="url" maxlength="10000" placeholder="https://en.wikipedia.org/wiki/Carl_von_Clausewitz">
               <p class="thinker-suggestions" id="wikipedia-suggestions"><a href="https://en.wikipedia.org/wiki/List_of_military_theorists_and_writers" target="_blank" rel="noopener noreferrer">Browse Wikipedia military theorists and writers</a></p>
+              <label id="text-label" for="entry-text" hidden>Text</label>
+              <textarea id="entry-text" rows="12" maxlength="100000" placeholder="Paste the source text here" hidden></textarea>
               <label id="ollama-prompt-label" for="ollama-prompt">Ollama LLM prompt</label>
               <textarea id="ollama-prompt" rows="4" maxlength="5000">What are the thinker's contributions to military strategic thought?</textarea>
               <label id="response-word-count-label" for="response-word-count">Ollama LLM answer length (words)</label>

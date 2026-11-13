@@ -55,6 +55,7 @@ services:
         condition: service_healthy
     environment:
       BRUNO_DATABASE: /app/instance/bruno.sqlite3
+      BRUNO_DATA_PATH: /data
       BRUNO_LLM_MODEL: ${BRUNO_LLM_MODEL:-qwen2.5:3b}
       BRUNO_LLM_URL: http://ollama:11434/api/generate
       BRUNO_MONGODB_URI: mongodb://mongodb:27017
@@ -65,6 +66,7 @@ services:
       - "127.0.0.1:${BRUNO_PORT:-5000}:5000"
     volumes:
       - ./instance:/app/instance
+      - ./data:/data
     healthcheck:
       test:
         [

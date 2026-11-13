@@ -174,6 +174,11 @@ class BrunoApiTests(unittest.TestCase):
 
         self.assertEqual(homepage.status_code, 200)
         self.assertEqual(app_script.status_code, 200)
+        self.assertIn(b"https://github.com/michelcapelle/bruno", homepage.data)
+        self.assertIn(b'href="/essay.pdf"', homepage.data)
+        essay = self.client.get("/essay.pdf")
+        self.assertEqual(essay.status_code, 200)
+        self.assertEqual(essay.mimetype, "application/pdf")
         self.assertEqual(app_script.data.count(b'target = "_blank"'), 5)
         self.assertEqual(app_script.data.count(b'rel = "noopener noreferrer"'), 5)
         app_script.close()
@@ -232,7 +237,7 @@ class BrunoApiTests(unittest.TestCase):
             app_script.data,
         )
         self.assertIn(
-            b'fetch(`/visualizations/${visualization}`',
+            b'fetch(backendUrl(`/visualizations/${visualization}`)',
             app_script.data,
         )
         self.assertIn(
@@ -314,7 +319,7 @@ class BrunoApiTests(unittest.TestCase):
         )
         self.assertIn(b'id="topic-source" hidden', homepage.data)
         self.assertIn(b'<option value="ollama">Ollama analysis</option>', homepage.data)
-        self.assertIn(b'<option value="wikipedia" selected>Wikipedia text</option>', homepage.data)
+        self.assertIn(b'<option value="wikipedia" selected>(Wikipedia) text</option>', homepage.data)
         self.assertIn(b'payload.topic_source = topicSourceSelect.value', app_script.data)
         self.assertNotIn(b'topicSourceSelect.value = "wikipedia"', app_script.data)
         self.assertIn(b"async function loadCollectionCounts()", app_script.data)
@@ -1075,7 +1080,7 @@ class BrunoApiTests(unittest.TestCase):
 
     @patch("bruno.app._load_bertopic_model")
     @patch("bruno.app._split_documents_into_sentences")
-    def test_hierarchical_documents_visualization_uses_hierarchical_topics(
+    def test_hierarchical_documents_visualization_uses_native_renderer(
         self, split_documents, load_topic_model
     ):
         model_path = Path(self.app.config["BERTOPIC_MODEL_PATH"])
@@ -1116,10 +1121,32 @@ class BrunoApiTests(unittest.TestCase):
         )
         topic_model.visualize_hierarchical_documents.assert_called_once_with(
             ["First sentence.", "Second sentence."],
-            hierarchical_topics,
-            nr_levels=1,
+            hierarchical_topics=hierarchical_topics,
             hide_document_hover=True,
+            nr_levels=1,
         )
+
+    def test_normalize_hierarchical_topics_adds_root_parent(self):
+        import pandas as pd
+
+        from bruno.app import _normalize_hierarchical_topics
+
+        hierarchy = pd.DataFrame(
+            [
+                {
+                    "Parent_ID": "2",
+                    "Parent_Name": "0_1",
+                    "Topics": [0, 1],
+                    "Distance": 0.5,
+                }
+            ]
+        )
+
+        normalized = _normalize_hierarchical_topics(hierarchy, [-1, 0, 1])
+
+        self.assertEqual(normalized.iloc[-1]["Parent_ID"], "3")
+        self.assertEqual(normalized.iloc[-1]["Parent_Name"], "All topics")
+        self.assertEqual(normalized.iloc[-1]["Topics"], [0, 1])
 
     @patch("bruno.app._load_bertopic_model")
     @patch("bruno.app._split_documents_into_sentences")
@@ -2095,6 +2122,42 @@ class BrunoApiTests(unittest.TestCase):
         self.assertEqual(self.client.get("/api/thinkers").json[0]["name"], "Hannah Arendt")
         self.assertEqual(self.client.get("/api/concepts").json, [])
 
+    @patch("bruno.app._language_model_connected", return_value=True)
+    def test_export_copies_referenced_documents(self, language_model_connected):
+        thinker_id = self.add_thinker_text("Hannah Arendt", "Source text")
+        data_path = Path(self.temp_dir.name) / "data"
+        data_path.mkdir()
+        (data_path / "stale.json").write_text("stale", encoding="utf-8")
+        (data_path / "stale-documents").mkdir()
+        (data_path / "stale-documents" / "old").write_text(
+            "stale", encoding="utf-8"
+        )
+        self.app.config["DATA_PATH"] = str(data_path)
+
+        response = self.client.post("/api/export")
+
+        self.assertEqual(response.status_code, 200)
+        manifest = response.json
+        self.assertFalse((data_path / "stale.json").exists())
+        self.assertFalse((data_path / "stale-documents").exists())
+        self.assertIn("thinkers.json", manifest["files"])
+        self.assertIn("concepts.json", manifest["files"])
+        connection = sqlite3.connect(self.app.config["DATABASE"])
+        try:
+            row = connection.execute(
+                "SELECT wiki_text_document_id, military_thinking_document_id "
+                "FROM thinkers WHERE id = ?",
+                (thinker_id,),
+            ).fetchone()
+        finally:
+            connection.close()
+        for document_id in row:
+            document_path = data_path / "documents" / document_id
+            self.assertTrue(document_path.is_file())
+            self.assertGreater(document_path.stat().st_size, 0)
+            self.assertIn(f"documents/{document_id}", manifest["files"])
+        language_model_connected.assert_called_once_with()
+
     def test_records_survive_application_recreation(self):
         self.client.post("/api/concepts", json={"name": "Plurality"})
 
@@ -2110,6 +2173,24 @@ class BrunoApiTests(unittest.TestCase):
         response = self.client.get("/api/thinkers/999")
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json, {"error": "Thinker not found."})
+
+    def test_process_thinker_keeps_multiple_manual_text_thinkers(self):
+        first = self.client.post(
+            "/api/thinkers/process",
+            json={"name": "First thinker", "text": "First source text."},
+        )
+        second = self.client.post(
+            "/api/thinkers/process",
+            json={"name": "Second thinker", "text": "Second source text."},
+        )
+
+        self.assertEqual(first.status_code, 201)
+        self.assertEqual(second.status_code, 201)
+        thinkers = self.client.get("/api/thinkers").json
+        self.assertEqual(sorted(thinker["name"] for thinker in thinkers), [
+            "First thinker",
+            "Second thinker",
+        ])
 
     @patch("bruno.app._download_dbpedia_data")
     @patch("bruno.app._download_wikipedia_page")
